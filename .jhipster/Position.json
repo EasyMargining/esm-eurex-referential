@@ -1,0 +1,56 @@
+{
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "productId",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "expiryDate",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "versionNumber",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "productSettlementType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "optionType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "exercisePrice",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "exerciseStyleFlag",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "instrumentType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "quantity",
+            "fieldType": "Double",
+            "fieldValidateRules": [
+                "required"
+            ]
+        }
+    ],
+    "dto": "no",
+    "service": "no",
+    "entityTableName": "position",
+    "pagination": "infinite-scroll",
+    "microserviceName": "esmeurexreferential",
+    "searchEngine": "no"
+}

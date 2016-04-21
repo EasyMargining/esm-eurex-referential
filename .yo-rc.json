@@ -1,0 +1,25 @@
+{
+  "generator-jhipster": {
+    "jhipsterVersion": "3.0.0",
+    "baseName": "esmeurexreferential",
+    "packageName": "com.easymargining",
+    "packageFolder": "com/easymargining",
+    "serverPort": "8092",
+    "authenticationType": "jwt",
+    "hibernateCache": "no",
+    "databaseType": "mongodb",
+    "devDatabaseType": "mongodb",
+    "prodDatabaseType": "mongodb",
+    "searchEngine": "no",
+    "buildTool": "maven",
+    "jwtSecretKey": "e9b59f49257e3982d722b457cbec5632a04f36ef",
+    "enableTranslation": false,
+    "applicationType": "microservice",
+    "testFrameworks": [
+      "gatling",
+      "cucumber"
+    ],
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}

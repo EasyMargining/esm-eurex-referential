@@ -1,0 +1,9 @@
+version: '2'
+services:
+    esmeurexreferential-mongodb:
+        container_name: esmeurexreferential-mongodb
+        image: mongo:3.2.3
+        # volumes:
+        #     - ~/volumes/jhipster/esmeurexreferential/mongodb/:/data/db/
+        ports:
+            - 27017:27017
