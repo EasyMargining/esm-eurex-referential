@@ -9,6 +9,13 @@
             ]
         },
         {
+            "fieldName": "portfolioId",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
             "fieldName": "expiryDate",
             "fieldType": "LocalDate",
             "fieldValidateRules": [

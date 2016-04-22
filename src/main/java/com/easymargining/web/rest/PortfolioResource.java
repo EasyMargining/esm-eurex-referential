@@ -30,10 +30,10 @@ import java.util.Optional;
 public class PortfolioResource {
 
     private final Logger log = LoggerFactory.getLogger(PortfolioResource.class);
-        
+
     @Inject
     private PortfolioRepository portfolioRepository;
-    
+
     /**
      * POST  /portfolios : Create a new portfolio.
      *
@@ -94,7 +94,7 @@ public class PortfolioResource {
     public ResponseEntity<List<Portfolio>> getAllPortfolios(Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to get a page of Portfolios");
-        Page<Portfolio> page = portfolioRepository.findAll(pageable); 
+        Page<Portfolio> page = portfolioRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/portfolios");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -113,6 +113,26 @@ public class PortfolioResource {
         log.debug("REST request to get Portfolio : {}", id);
         Portfolio portfolio = portfolioRepository.findOne(id);
         return Optional.ofNullable(portfolio)
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * GET  /portfolios/:owner : get portfolios for an "owner".
+     *
+     * @param owner the owner of the portfolios to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the portfolios, or with status 404 (Not Found)
+     */
+    @RequestMapping(value = "/portfolios/byOwner/{owner}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public ResponseEntity<List<Portfolio>> getPortfolioByOwner(@PathVariable String owner) {
+        log.debug("REST request to get Portfolios : {}", owner);
+        List<Portfolio> portfolios = portfolioRepository.findByOwner(owner);
+        return Optional.ofNullable(portfolios)
             .map(result -> new ResponseEntity<>(
                 result,
                 HttpStatus.OK))

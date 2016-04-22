@@ -30,10 +30,10 @@ import java.util.Optional;
 public class PositionResource {
 
     private final Logger log = LoggerFactory.getLogger(PositionResource.class);
-        
+
     @Inject
     private PositionRepository positionRepository;
-    
+
     /**
      * POST  /positions : Create a new position.
      *
@@ -94,7 +94,7 @@ public class PositionResource {
     public ResponseEntity<List<Position>> getAllPositions(Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to get a page of Positions");
-        Page<Position> page = positionRepository.findAll(pageable); 
+        Page<Position> page = positionRepository.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/positions");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -113,6 +113,26 @@ public class PositionResource {
         log.debug("REST request to get Position : {}", id);
         Position position = positionRepository.findOne(id);
         return Optional.ofNullable(position)
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * GET  /positions/byPortfolio/:portfolioId : get positions for a "portfolioId"
+     *
+     * @param portfolioId the portfolioId of the positions to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the positions, or with status 404 (Not Found)
+     */
+    @RequestMapping(value = "/positions/byPortfolio/{portfolioId}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public ResponseEntity<List<Position>> getPositionByPortfolio(@PathVariable String portfolioId) {
+        log.debug("REST request to get Positions : {}", portfolioId);
+        List<Position> positions = positionRepository.findByPortfolioId(portfolioId);
+        return Optional.ofNullable(positions)
             .map(result -> new ResponseEntity<>(
                 result,
                 HttpStatus.OK))

@@ -42,6 +42,8 @@ public class PortfolioResourceIntTest {
 
     private static final String DEFAULT_NAME = "AAAAA";
     private static final String UPDATED_NAME = "BBBBB";
+    private static final String DEFAULT_OWNER = "AAAAA";
+    private static final String UPDATED_OWNER = "BBBBB";
 
     @Inject
     private PortfolioRepository portfolioRepository;
@@ -71,6 +73,7 @@ public class PortfolioResourceIntTest {
         portfolioRepository.deleteAll();
         portfolio = new Portfolio();
         portfolio.setName(DEFAULT_NAME);
+        portfolio.setOwner(DEFAULT_OWNER);
     }
 
     @Test
@@ -89,6 +92,7 @@ public class PortfolioResourceIntTest {
         assertThat(portfolios).hasSize(databaseSizeBeforeCreate + 1);
         Portfolio testPortfolio = portfolios.get(portfolios.size() - 1);
         assertThat(testPortfolio.getName()).isEqualTo(DEFAULT_NAME);
+        assertThat(testPortfolio.getOwner()).isEqualTo(DEFAULT_OWNER);
     }
 
     @Test
@@ -96,6 +100,23 @@ public class PortfolioResourceIntTest {
         int databaseSizeBeforeTest = portfolioRepository.findAll().size();
         // set the field null
         portfolio.setName(null);
+
+        // Create the Portfolio, which fails.
+
+        restPortfolioMockMvc.perform(post("/api/portfolios")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(portfolio)))
+                .andExpect(status().isBadRequest());
+
+        List<Portfolio> portfolios = portfolioRepository.findAll();
+        assertThat(portfolios).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    public void checkOwnerIsRequired() throws Exception {
+        int databaseSizeBeforeTest = portfolioRepository.findAll().size();
+        // set the field null
+        portfolio.setOwner(null);
 
         // Create the Portfolio, which fails.
 
@@ -118,7 +139,8 @@ public class PortfolioResourceIntTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(portfolio.getId())))
-                .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())));
+                .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
+                .andExpect(jsonPath("$.[*].owner").value(hasItem(DEFAULT_OWNER.toString())));
     }
 
     @Test
@@ -131,7 +153,8 @@ public class PortfolioResourceIntTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value(portfolio.getId()))
-            .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()));
+            .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
+            .andExpect(jsonPath("$.owner").value(DEFAULT_OWNER.toString()));
     }
 
     @Test
@@ -151,6 +174,7 @@ public class PortfolioResourceIntTest {
         Portfolio updatedPortfolio = new Portfolio();
         updatedPortfolio.setId(portfolio.getId());
         updatedPortfolio.setName(UPDATED_NAME);
+        updatedPortfolio.setOwner(UPDATED_OWNER);
 
         restPortfolioMockMvc.perform(put("/api/portfolios")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -162,6 +186,7 @@ public class PortfolioResourceIntTest {
         assertThat(portfolios).hasSize(databaseSizeBeforeUpdate);
         Portfolio testPortfolio = portfolios.get(portfolios.size() - 1);
         assertThat(testPortfolio.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(testPortfolio.getOwner()).isEqualTo(UPDATED_OWNER);
     }
 
     @Test

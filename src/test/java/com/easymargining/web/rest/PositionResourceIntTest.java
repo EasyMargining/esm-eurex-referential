@@ -3,15 +3,17 @@ package com.easymargining.web.rest;
 import com.easymargining.EsmeurexreferentialApp;
 import com.easymargining.domain.Position;
 import com.easymargining.repository.PositionRepository;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.hamcrest.Matchers.hasItem;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -21,10 +23,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,9 +44,11 @@ public class PositionResourceIntTest {
 
     private static final String DEFAULT_PRODUCT_ID = "AAAAA";
     private static final String UPDATED_PRODUCT_ID = "BBBBB";
+    private static final String DEFAULT_PORTFOLIO_ID = "AAAAA";
+    private static final String UPDATED_PORTFOLIO_ID = "BBBBB";
 
-    private static final LocalDate DEFAULT_EXPIRY_DATE = LocalDate.parse("01-01-2016");
-    private static final LocalDate UPDATED_EXPIRY_DATE = LocalDate.parse("01-01-2017");
+    private static final LocalDate DEFAULT_EXPIRY_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_EXPIRY_DATE = LocalDate.now(ZoneId.systemDefault());
     private static final String DEFAULT_VERSION_NUMBER = "AAAAA";
     private static final String UPDATED_VERSION_NUMBER = "BBBBB";
     private static final String DEFAULT_PRODUCT_SETTLEMENT_TYPE = "AAAAA";
@@ -90,6 +94,7 @@ public class PositionResourceIntTest {
         positionRepository.deleteAll();
         position = new Position();
         position.setProductId(DEFAULT_PRODUCT_ID);
+        position.setPortfolioId(DEFAULT_PORTFOLIO_ID);
         position.setExpiryDate(DEFAULT_EXPIRY_DATE);
         position.setVersionNumber(DEFAULT_VERSION_NUMBER);
         position.setProductSettlementType(DEFAULT_PRODUCT_SETTLEMENT_TYPE);
@@ -116,6 +121,7 @@ public class PositionResourceIntTest {
         assertThat(positions).hasSize(databaseSizeBeforeCreate + 1);
         Position testPosition = positions.get(positions.size() - 1);
         assertThat(testPosition.getProductId()).isEqualTo(DEFAULT_PRODUCT_ID);
+        assertThat(testPosition.getPortfolioId()).isEqualTo(DEFAULT_PORTFOLIO_ID);
         assertThat(testPosition.getExpiryDate()).isEqualTo(DEFAULT_EXPIRY_DATE);
         assertThat(testPosition.getVersionNumber()).isEqualTo(DEFAULT_VERSION_NUMBER);
         assertThat(testPosition.getProductSettlementType()).isEqualTo(DEFAULT_PRODUCT_SETTLEMENT_TYPE);
@@ -131,6 +137,40 @@ public class PositionResourceIntTest {
         int databaseSizeBeforeTest = positionRepository.findAll().size();
         // set the field null
         position.setProductId(null);
+
+        // Create the Position, which fails.
+
+        restPositionMockMvc.perform(post("/api/positions")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(position)))
+                .andExpect(status().isBadRequest());
+
+        List<Position> positions = positionRepository.findAll();
+        assertThat(positions).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    public void checkPortfolioIdIsRequired() throws Exception {
+        int databaseSizeBeforeTest = positionRepository.findAll().size();
+        // set the field null
+        position.setPortfolioId(null);
+
+        // Create the Position, which fails.
+
+        restPositionMockMvc.perform(post("/api/positions")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(position)))
+                .andExpect(status().isBadRequest());
+
+        List<Position> positions = positionRepository.findAll();
+        assertThat(positions).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    public void checkExpiryDateIsRequired() throws Exception {
+        int databaseSizeBeforeTest = positionRepository.findAll().size();
+        // set the field null
+        position.setExpiryDate(null);
 
         // Create the Position, which fails.
 
@@ -171,6 +211,7 @@ public class PositionResourceIntTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.[*].id").value(hasItem(position.getId())))
                 .andExpect(jsonPath("$.[*].productId").value(hasItem(DEFAULT_PRODUCT_ID.toString())))
+                .andExpect(jsonPath("$.[*].portfolioId").value(hasItem(DEFAULT_PORTFOLIO_ID.toString())))
                 .andExpect(jsonPath("$.[*].expiryDate").value(hasItem(DEFAULT_EXPIRY_DATE.toString())))
                 .andExpect(jsonPath("$.[*].versionNumber").value(hasItem(DEFAULT_VERSION_NUMBER.toString())))
                 .andExpect(jsonPath("$.[*].productSettlementType").value(hasItem(DEFAULT_PRODUCT_SETTLEMENT_TYPE.toString())))
@@ -192,6 +233,7 @@ public class PositionResourceIntTest {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.id").value(position.getId()))
             .andExpect(jsonPath("$.productId").value(DEFAULT_PRODUCT_ID.toString()))
+            .andExpect(jsonPath("$.portfolioId").value(DEFAULT_PORTFOLIO_ID.toString()))
             .andExpect(jsonPath("$.expiryDate").value(DEFAULT_EXPIRY_DATE.toString()))
             .andExpect(jsonPath("$.versionNumber").value(DEFAULT_VERSION_NUMBER.toString()))
             .andExpect(jsonPath("$.productSettlementType").value(DEFAULT_PRODUCT_SETTLEMENT_TYPE.toString()))
@@ -219,6 +261,7 @@ public class PositionResourceIntTest {
         Position updatedPosition = new Position();
         updatedPosition.setId(position.getId());
         updatedPosition.setProductId(UPDATED_PRODUCT_ID);
+        updatedPosition.setPortfolioId(UPDATED_PORTFOLIO_ID);
         updatedPosition.setExpiryDate(UPDATED_EXPIRY_DATE);
         updatedPosition.setVersionNumber(UPDATED_VERSION_NUMBER);
         updatedPosition.setProductSettlementType(UPDATED_PRODUCT_SETTLEMENT_TYPE);
@@ -238,6 +281,7 @@ public class PositionResourceIntTest {
         assertThat(positions).hasSize(databaseSizeBeforeUpdate);
         Position testPosition = positions.get(positions.size() - 1);
         assertThat(testPosition.getProductId()).isEqualTo(UPDATED_PRODUCT_ID);
+        assertThat(testPosition.getPortfolioId()).isEqualTo(UPDATED_PORTFOLIO_ID);
         assertThat(testPosition.getExpiryDate()).isEqualTo(UPDATED_EXPIRY_DATE);
         assertThat(testPosition.getVersionNumber()).isEqualTo(UPDATED_VERSION_NUMBER);
         assertThat(testPosition.getProductSettlementType()).isEqualTo(UPDATED_PRODUCT_SETTLEMENT_TYPE);

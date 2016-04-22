@@ -24,6 +24,10 @@ public class Portfolio implements Serializable {
     @Field("name")
     private String name;
 
+    @NotNull
+    @Field("owner")
+    private String owner;
+
     public String getId() {
         return id;
     }
@@ -38,6 +42,14 @@ public class Portfolio implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
     @Override
@@ -65,6 +77,7 @@ public class Portfolio implements Serializable {
         return "Portfolio{" +
             "id=" + id +
             ", name='" + name + "'" +
+            ", owner='" + owner + "'" +
             '}';
     }
 }

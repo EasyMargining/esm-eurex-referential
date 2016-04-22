@@ -68,7 +68,7 @@ class PositionGatlingTest extends Simulation {
             .exec(http("Create new position")
             .post("/api/positions")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "productId":"SAMPLE_TEXT", "expiryDate":null, "versionNumber":"SAMPLE_TEXT", "productSettlementType":"SAMPLE_TEXT", "optionType":"SAMPLE_TEXT", "exercisePrice":null, "exerciseStyleFlag":"SAMPLE_TEXT", "instrumentType":"SAMPLE_TEXT", "quantity":null}""")).asJSON
+            .body(StringBody("""{"id":null, "productId":"SAMPLE_TEXT", "portfolioId":"SAMPLE_TEXT", "expiryDate":"2020-01-01T00:00:00.000Z", "versionNumber":"SAMPLE_TEXT", "productSettlementType":"SAMPLE_TEXT", "optionType":"SAMPLE_TEXT", "exercisePrice":null, "exerciseStyleFlag":"SAMPLE_TEXT", "instrumentType":"SAMPLE_TEXT", "quantity":null}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_position_url"))).exitHereIfFailed
             .pause(10)

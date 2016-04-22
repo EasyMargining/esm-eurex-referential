@@ -25,6 +25,11 @@ public class Position implements Serializable {
     @Field("product_id")
     private String productId;
 
+    @NotNull
+    @Field("portfolio_id")
+    private String portfolioId;
+
+    @NotNull
     @Field("expiry_date")
     private LocalDate expiryDate;
 
@@ -64,6 +69,14 @@ public class Position implements Serializable {
 
     public void setProductId(String productId) {
         this.productId = productId;
+    }
+
+    public String getPortfolioId() {
+        return portfolioId;
+    }
+
+    public void setPortfolioId(String portfolioId) {
+        this.portfolioId = portfolioId;
     }
 
     public LocalDate getExpiryDate() {
@@ -155,6 +168,7 @@ public class Position implements Serializable {
         return "Position{" +
             "id=" + id +
             ", productId='" + productId + "'" +
+            ", portfolioId='" + portfolioId + "'" +
             ", expiryDate='" + expiryDate + "'" +
             ", versionNumber='" + versionNumber + "'" +
             ", productSettlementType='" + productSettlementType + "'" +

@@ -68,7 +68,7 @@ class PortfolioGatlingTest extends Simulation {
             .exec(http("Create new portfolio")
             .post("/api/portfolios")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "name":"SAMPLE_TEXT"}""")).asJSON
+            .body(StringBody("""{"id":null, "name":"SAMPLE_TEXT", "owner":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_portfolio_url"))).exitHereIfFailed
             .pause(10)
