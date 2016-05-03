@@ -9,6 +9,10 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import com.easymargining.domain.enumeration.Exchange;
+
+import com.easymargining.domain.enumeration.State;
+
 /**
  * A Position.
  */
@@ -30,30 +34,20 @@ public class Position implements Serializable {
     private String portfolioId;
 
     @NotNull
-    @Field("expiry_date")
-    private LocalDate expiryDate;
-
-    @Field("version_number")
-    private String versionNumber;
-
-    @Field("product_settlement_type")
-    private String productSettlementType;
-
-    @Field("option_type")
-    private String optionType;
-
-    @Field("exercise_price")
-    private Double exercisePrice;
-
-    @Field("exercise_style_flag")
-    private String exerciseStyleFlag;
-
-    @Field("instrument_type")
-    private String instrumentType;
+    @Field("effective_date")
+    private LocalDate effectiveDate;
 
     @NotNull
     @Field("quantity")
     private Double quantity;
+
+    @NotNull
+    @Field("exchange")
+    private Exchange exchange;
+
+    @NotNull
+    @Field("state")
+    private State state;
 
     public String getId() {
         return id;
@@ -79,60 +73,12 @@ public class Position implements Serializable {
         this.portfolioId = portfolioId;
     }
 
-    public LocalDate getExpiryDate() {
-        return expiryDate;
+    public LocalDate getEffectiveDate() {
+        return effectiveDate;
     }
 
-    public void setExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public String getVersionNumber() {
-        return versionNumber;
-    }
-
-    public void setVersionNumber(String versionNumber) {
-        this.versionNumber = versionNumber;
-    }
-
-    public String getProductSettlementType() {
-        return productSettlementType;
-    }
-
-    public void setProductSettlementType(String productSettlementType) {
-        this.productSettlementType = productSettlementType;
-    }
-
-    public String getOptionType() {
-        return optionType;
-    }
-
-    public void setOptionType(String optionType) {
-        this.optionType = optionType;
-    }
-
-    public Double getExercisePrice() {
-        return exercisePrice;
-    }
-
-    public void setExercisePrice(Double exercisePrice) {
-        this.exercisePrice = exercisePrice;
-    }
-
-    public String getExerciseStyleFlag() {
-        return exerciseStyleFlag;
-    }
-
-    public void setExerciseStyleFlag(String exerciseStyleFlag) {
-        this.exerciseStyleFlag = exerciseStyleFlag;
-    }
-
-    public String getInstrumentType() {
-        return instrumentType;
-    }
-
-    public void setInstrumentType(String instrumentType) {
-        this.instrumentType = instrumentType;
+    public void setEffectiveDate(LocalDate effectiveDate) {
+        this.effectiveDate = effectiveDate;
     }
 
     public Double getQuantity() {
@@ -141,6 +87,22 @@ public class Position implements Serializable {
 
     public void setQuantity(Double quantity) {
         this.quantity = quantity;
+    }
+
+    public Exchange getExchange() {
+        return exchange;
+    }
+
+    public void setExchange(Exchange exchange) {
+        this.exchange = exchange;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     @Override
@@ -169,14 +131,10 @@ public class Position implements Serializable {
             "id=" + id +
             ", productId='" + productId + "'" +
             ", portfolioId='" + portfolioId + "'" +
-            ", expiryDate='" + expiryDate + "'" +
-            ", versionNumber='" + versionNumber + "'" +
-            ", productSettlementType='" + productSettlementType + "'" +
-            ", optionType='" + optionType + "'" +
-            ", exercisePrice='" + exercisePrice + "'" +
-            ", exerciseStyleFlag='" + exerciseStyleFlag + "'" +
-            ", instrumentType='" + instrumentType + "'" +
+            ", effectiveDate='" + effectiveDate + "'" +
             ", quantity='" + quantity + "'" +
+            ", exchange='" + exchange + "'" +
+            ", state='" + state + "'" +
             '}';
     }
 }

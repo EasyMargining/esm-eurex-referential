@@ -72,3 +72,10 @@ jhipster:
             host: localhost
             port: 5000
             queueSize: 512
+
+# ===================================================================
+# Esm-gateway specific properties
+# ===================================================================
+marketdata:
+    valuationdate: 2015-11-27
+    directory: C:\\HOMEWARE\\marketdata

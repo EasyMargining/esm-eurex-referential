@@ -1,0 +1,114 @@
+{
+    "relationships": [],
+    "fields": [
+        {
+            "fieldName": "productId",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "effectiveDate",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "MaturityYear",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "MaturityMonth",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "MaturityDay",
+            "fieldType": "Integer",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "versionNumber",
+            "fieldType": "Integer"
+        },
+        {
+            "fieldName": "productSettlementType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "optionType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "exercisePrice",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "currency",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "exerciseStyleFlag",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "instrumentType",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "tickSize",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "tickValue",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "marginStyle",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "liquidityClass",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "liquidationGroup",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "settlementPrice",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "productName",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "bloombergId",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "bloombergUrl",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "isin",
+            "fieldType": "String"
+        }
+    ],
+    "dto": "no",
+    "service": "yes",
+    "entityTableName": "product",
+    "pagination": "infinite-scroll",
+    "microserviceName": "esmeurexreferential",
+    "searchEngine": "no"
+}

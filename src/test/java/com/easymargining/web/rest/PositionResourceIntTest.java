@@ -2,18 +2,18 @@ package com.easymargining.web.rest;
 
 import com.easymargining.EsmeurexreferentialApp;
 import com.easymargining.domain.Position;
+import com.easymargining.domain.enumeration.Exchange;
+import com.easymargining.domain.enumeration.State;
 import com.easymargining.repository.PositionRepository;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import static org.hamcrest.Matchers.hasItem;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -27,9 +27,9 @@ import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 /**
  * Test class for the PositionResource REST controller.
@@ -47,24 +47,17 @@ public class PositionResourceIntTest {
     private static final String DEFAULT_PORTFOLIO_ID = "AAAAA";
     private static final String UPDATED_PORTFOLIO_ID = "BBBBB";
 
-    private static final LocalDate DEFAULT_EXPIRY_DATE = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_EXPIRY_DATE = LocalDate.now(ZoneId.systemDefault());
-    private static final String DEFAULT_VERSION_NUMBER = "AAAAA";
-    private static final String UPDATED_VERSION_NUMBER = "BBBBB";
-    private static final String DEFAULT_PRODUCT_SETTLEMENT_TYPE = "AAAAA";
-    private static final String UPDATED_PRODUCT_SETTLEMENT_TYPE = "BBBBB";
-    private static final String DEFAULT_OPTION_TYPE = "AAAAA";
-    private static final String UPDATED_OPTION_TYPE = "BBBBB";
-
-    private static final Double DEFAULT_EXERCISE_PRICE = 1D;
-    private static final Double UPDATED_EXERCISE_PRICE = 2D;
-    private static final String DEFAULT_EXERCISE_STYLE_FLAG = "AAAAA";
-    private static final String UPDATED_EXERCISE_STYLE_FLAG = "BBBBB";
-    private static final String DEFAULT_INSTRUMENT_TYPE = "AAAAA";
-    private static final String UPDATED_INSTRUMENT_TYPE = "BBBBB";
+    private static final LocalDate DEFAULT_EFFECTIVE_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_EFFECTIVE_DATE = LocalDate.now(ZoneId.systemDefault());
 
     private static final Double DEFAULT_QUANTITY = 1D;
     private static final Double UPDATED_QUANTITY = 2D;
+
+    private static final Exchange DEFAULT_EXCHANGE = Exchange.eurex;
+    private static final Exchange UPDATED_EXCHANGE = Exchange.lse;
+
+    private static final State DEFAULT_STATE = State.live;
+    private static final State UPDATED_STATE = State.expirated;
 
     @Inject
     private PositionRepository positionRepository;
@@ -95,14 +88,10 @@ public class PositionResourceIntTest {
         position = new Position();
         position.setProductId(DEFAULT_PRODUCT_ID);
         position.setPortfolioId(DEFAULT_PORTFOLIO_ID);
-        position.setExpiryDate(DEFAULT_EXPIRY_DATE);
-        position.setVersionNumber(DEFAULT_VERSION_NUMBER);
-        position.setProductSettlementType(DEFAULT_PRODUCT_SETTLEMENT_TYPE);
-        position.setOptionType(DEFAULT_OPTION_TYPE);
-        position.setExercisePrice(DEFAULT_EXERCISE_PRICE);
-        position.setExerciseStyleFlag(DEFAULT_EXERCISE_STYLE_FLAG);
-        position.setInstrumentType(DEFAULT_INSTRUMENT_TYPE);
+        position.setEffectiveDate(DEFAULT_EFFECTIVE_DATE);
         position.setQuantity(DEFAULT_QUANTITY);
+        position.setExchange(DEFAULT_EXCHANGE);
+        position.setState(DEFAULT_STATE);
     }
 
     @Test
@@ -122,14 +111,10 @@ public class PositionResourceIntTest {
         Position testPosition = positions.get(positions.size() - 1);
         assertThat(testPosition.getProductId()).isEqualTo(DEFAULT_PRODUCT_ID);
         assertThat(testPosition.getPortfolioId()).isEqualTo(DEFAULT_PORTFOLIO_ID);
-        assertThat(testPosition.getExpiryDate()).isEqualTo(DEFAULT_EXPIRY_DATE);
-        assertThat(testPosition.getVersionNumber()).isEqualTo(DEFAULT_VERSION_NUMBER);
-        assertThat(testPosition.getProductSettlementType()).isEqualTo(DEFAULT_PRODUCT_SETTLEMENT_TYPE);
-        assertThat(testPosition.getOptionType()).isEqualTo(DEFAULT_OPTION_TYPE);
-        assertThat(testPosition.getExercisePrice()).isEqualTo(DEFAULT_EXERCISE_PRICE);
-        assertThat(testPosition.getExerciseStyleFlag()).isEqualTo(DEFAULT_EXERCISE_STYLE_FLAG);
-        assertThat(testPosition.getInstrumentType()).isEqualTo(DEFAULT_INSTRUMENT_TYPE);
+        assertThat(testPosition.getEffectiveDate()).isEqualTo(DEFAULT_EFFECTIVE_DATE);
         assertThat(testPosition.getQuantity()).isEqualTo(DEFAULT_QUANTITY);
+        assertThat(testPosition.getExchange()).isEqualTo(DEFAULT_EXCHANGE);
+        assertThat(testPosition.getState()).isEqualTo(DEFAULT_STATE);
     }
 
     @Test
@@ -167,10 +152,10 @@ public class PositionResourceIntTest {
     }
 
     @Test
-    public void checkExpiryDateIsRequired() throws Exception {
+    public void checkEffectiveDateIsRequired() throws Exception {
         int databaseSizeBeforeTest = positionRepository.findAll().size();
         // set the field null
-        position.setExpiryDate(null);
+        position.setEffectiveDate(null);
 
         // Create the Position, which fails.
 
@@ -201,6 +186,40 @@ public class PositionResourceIntTest {
     }
 
     @Test
+    public void checkExchangeIsRequired() throws Exception {
+        int databaseSizeBeforeTest = positionRepository.findAll().size();
+        // set the field null
+        position.setExchange(null);
+
+        // Create the Position, which fails.
+
+        restPositionMockMvc.perform(post("/api/positions")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(position)))
+                .andExpect(status().isBadRequest());
+
+        List<Position> positions = positionRepository.findAll();
+        assertThat(positions).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    public void checkStateIsRequired() throws Exception {
+        int databaseSizeBeforeTest = positionRepository.findAll().size();
+        // set the field null
+        position.setState(null);
+
+        // Create the Position, which fails.
+
+        restPositionMockMvc.perform(post("/api/positions")
+                .contentType(TestUtil.APPLICATION_JSON_UTF8)
+                .content(TestUtil.convertObjectToJsonBytes(position)))
+                .andExpect(status().isBadRequest());
+
+        List<Position> positions = positionRepository.findAll();
+        assertThat(positions).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
     public void getAllPositions() throws Exception {
         // Initialize the database
         positionRepository.save(position);
@@ -212,14 +231,10 @@ public class PositionResourceIntTest {
                 .andExpect(jsonPath("$.[*].id").value(hasItem(position.getId())))
                 .andExpect(jsonPath("$.[*].productId").value(hasItem(DEFAULT_PRODUCT_ID.toString())))
                 .andExpect(jsonPath("$.[*].portfolioId").value(hasItem(DEFAULT_PORTFOLIO_ID.toString())))
-                .andExpect(jsonPath("$.[*].expiryDate").value(hasItem(DEFAULT_EXPIRY_DATE.toString())))
-                .andExpect(jsonPath("$.[*].versionNumber").value(hasItem(DEFAULT_VERSION_NUMBER.toString())))
-                .andExpect(jsonPath("$.[*].productSettlementType").value(hasItem(DEFAULT_PRODUCT_SETTLEMENT_TYPE.toString())))
-                .andExpect(jsonPath("$.[*].optionType").value(hasItem(DEFAULT_OPTION_TYPE.toString())))
-                .andExpect(jsonPath("$.[*].exercisePrice").value(hasItem(DEFAULT_EXERCISE_PRICE.doubleValue())))
-                .andExpect(jsonPath("$.[*].exerciseStyleFlag").value(hasItem(DEFAULT_EXERCISE_STYLE_FLAG.toString())))
-                .andExpect(jsonPath("$.[*].instrumentType").value(hasItem(DEFAULT_INSTRUMENT_TYPE.toString())))
-                .andExpect(jsonPath("$.[*].quantity").value(hasItem(DEFAULT_QUANTITY.doubleValue())));
+                .andExpect(jsonPath("$.[*].effectiveDate").value(hasItem(DEFAULT_EFFECTIVE_DATE.toString())))
+                .andExpect(jsonPath("$.[*].quantity").value(hasItem(DEFAULT_QUANTITY.doubleValue())))
+                .andExpect(jsonPath("$.[*].exchange").value(hasItem(DEFAULT_EXCHANGE.toString())))
+                .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE.toString())));
     }
 
     @Test
@@ -234,14 +249,10 @@ public class PositionResourceIntTest {
             .andExpect(jsonPath("$.id").value(position.getId()))
             .andExpect(jsonPath("$.productId").value(DEFAULT_PRODUCT_ID.toString()))
             .andExpect(jsonPath("$.portfolioId").value(DEFAULT_PORTFOLIO_ID.toString()))
-            .andExpect(jsonPath("$.expiryDate").value(DEFAULT_EXPIRY_DATE.toString()))
-            .andExpect(jsonPath("$.versionNumber").value(DEFAULT_VERSION_NUMBER.toString()))
-            .andExpect(jsonPath("$.productSettlementType").value(DEFAULT_PRODUCT_SETTLEMENT_TYPE.toString()))
-            .andExpect(jsonPath("$.optionType").value(DEFAULT_OPTION_TYPE.toString()))
-            .andExpect(jsonPath("$.exercisePrice").value(DEFAULT_EXERCISE_PRICE.doubleValue()))
-            .andExpect(jsonPath("$.exerciseStyleFlag").value(DEFAULT_EXERCISE_STYLE_FLAG.toString()))
-            .andExpect(jsonPath("$.instrumentType").value(DEFAULT_INSTRUMENT_TYPE.toString()))
-            .andExpect(jsonPath("$.quantity").value(DEFAULT_QUANTITY.doubleValue()));
+            .andExpect(jsonPath("$.effectiveDate").value(DEFAULT_EFFECTIVE_DATE.toString()))
+            .andExpect(jsonPath("$.quantity").value(DEFAULT_QUANTITY.doubleValue()))
+            .andExpect(jsonPath("$.exchange").value(DEFAULT_EXCHANGE.toString()))
+            .andExpect(jsonPath("$.state").value(DEFAULT_STATE.toString()));
     }
 
     @Test
@@ -262,14 +273,10 @@ public class PositionResourceIntTest {
         updatedPosition.setId(position.getId());
         updatedPosition.setProductId(UPDATED_PRODUCT_ID);
         updatedPosition.setPortfolioId(UPDATED_PORTFOLIO_ID);
-        updatedPosition.setExpiryDate(UPDATED_EXPIRY_DATE);
-        updatedPosition.setVersionNumber(UPDATED_VERSION_NUMBER);
-        updatedPosition.setProductSettlementType(UPDATED_PRODUCT_SETTLEMENT_TYPE);
-        updatedPosition.setOptionType(UPDATED_OPTION_TYPE);
-        updatedPosition.setExercisePrice(UPDATED_EXERCISE_PRICE);
-        updatedPosition.setExerciseStyleFlag(UPDATED_EXERCISE_STYLE_FLAG);
-        updatedPosition.setInstrumentType(UPDATED_INSTRUMENT_TYPE);
+        updatedPosition.setEffectiveDate(UPDATED_EFFECTIVE_DATE);
         updatedPosition.setQuantity(UPDATED_QUANTITY);
+        updatedPosition.setExchange(UPDATED_EXCHANGE);
+        updatedPosition.setState(UPDATED_STATE);
 
         restPositionMockMvc.perform(put("/api/positions")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -282,14 +289,10 @@ public class PositionResourceIntTest {
         Position testPosition = positions.get(positions.size() - 1);
         assertThat(testPosition.getProductId()).isEqualTo(UPDATED_PRODUCT_ID);
         assertThat(testPosition.getPortfolioId()).isEqualTo(UPDATED_PORTFOLIO_ID);
-        assertThat(testPosition.getExpiryDate()).isEqualTo(UPDATED_EXPIRY_DATE);
-        assertThat(testPosition.getVersionNumber()).isEqualTo(UPDATED_VERSION_NUMBER);
-        assertThat(testPosition.getProductSettlementType()).isEqualTo(UPDATED_PRODUCT_SETTLEMENT_TYPE);
-        assertThat(testPosition.getOptionType()).isEqualTo(UPDATED_OPTION_TYPE);
-        assertThat(testPosition.getExercisePrice()).isEqualTo(UPDATED_EXERCISE_PRICE);
-        assertThat(testPosition.getExerciseStyleFlag()).isEqualTo(UPDATED_EXERCISE_STYLE_FLAG);
-        assertThat(testPosition.getInstrumentType()).isEqualTo(UPDATED_INSTRUMENT_TYPE);
+        assertThat(testPosition.getEffectiveDate()).isEqualTo(UPDATED_EFFECTIVE_DATE);
         assertThat(testPosition.getQuantity()).isEqualTo(UPDATED_QUANTITY);
+        assertThat(testPosition.getExchange()).isEqualTo(UPDATED_EXCHANGE);
+        assertThat(testPosition.getState()).isEqualTo(UPDATED_STATE);
     }
 
     @Test

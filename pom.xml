@@ -20,11 +20,21 @@
             <id>spring-milestones</id>
             <url>http://repo.spring.io/milestone</url>
         </repository>
+        <repository>
+            <id>eurex-local-repository</id>
+            <name>Eurex Local repository</name>
+            <url>file://C://Users//rjean030116//EasyMargining//esm-eurex-referential//eurex-local-repository</url>
+        </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>spring-milestones</id>
             <url>http://repo.spring.io/milestone</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>eurex-local-repository</id>
+            <url>file://C://Users//rjean030116//EasyMargining//esm-eurex-referential//eurex-local-repository</url>
         </pluginRepository>
     </pluginRepositories>
 
@@ -55,6 +65,9 @@
         <spring-cloud.version>1.1.0.M5</spring-cloud.version>
         <spring-security.version>4.0.4.RELEASE</spring-security.version>
         <springfox.version>2.4.0</springfox.version>
+        <lombok.version>1.16.6</lombok.version>
+        <opengamma-eurex.archive>${project.basedir}/opengamma-eurex/pme-1.8.3_eurex-repository.zip</opengamma-eurex.archive>
+        <eurex-local-repository>${project.basedir}/eurex-local-repository</eurex-local-repository>
         <!-- Sonar properties -->
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
         <sonar-maven-plugin.version>2.7.1</sonar-maven-plugin.version>
@@ -72,7 +85,36 @@
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.threeten</groupId>
+                <artifactId>threetenbp</artifactId>
+                <version>0.8.1</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+
     <dependencies>
+
+        <dependency>
+            <groupId>com.opengamma.margining</groupId>
+            <artifactId>ogm-eurex-prisma-replication</artifactId>
+            <version>1.8.3</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>metrics-core</artifactId>
+                    <groupId>io.dropwizard.metrics</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
@@ -177,7 +219,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -193,12 +234,14 @@
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
             <scope>test</scope>
         </dependency>
+        <!--
         <dependency>
             <groupId>io.gatling.highcharts</groupId>
             <artifactId>gatling-charts-highcharts</artifactId>
             <version>${gatling.version}</version>
             <scope>test</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -408,6 +451,40 @@
         </testResources>
         <plugins>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>truezip-maven-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <id>extract-eurex-repository-archive</id>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <verbose>true</verbose>
+                            <fileset>
+                                <directory>${opengamma-eurex.archive}</directory>
+                                <outputDirectory>${eurex-local-repository}</outputDirectory>
+                            </fileset>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok-maven-plugin</artifactId>
+                <version>1.16.6.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>delombok</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>com.github.ekryd.sortpom</groupId>
                 <artifactId>sortpom-maven-plugin</artifactId>
                 <version>${sortpom-maven-plugin.version}</version>
@@ -615,7 +692,7 @@
                     It has no influence on the Maven build itself.
                     Remove when the m2e plugin can correctly bind to Maven lifecycle
                 -->
-                <plugin>
+                <!--<plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
                     <version>1.0.0</version>
@@ -642,7 +719,7 @@
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
-                </plugin>
+                </plugin>-->
              </plugins>
         </pluginManagement>
     </build>
