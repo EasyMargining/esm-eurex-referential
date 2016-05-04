@@ -3,11 +3,13 @@ package com.easymargining.domain;
 import com.fasterxml.jackson.databind.ser.std.StdArraySerializers;
 import com.sleepycat.bind.serial.SerialBase;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -33,10 +35,10 @@ public class ProductInformation implements Serializable {
     private String bloombergUrl;
     private String isin;
 
-    private List<ProductPrices> futuresPrices;
+    private HashMap<LocalDate, List<ProductPrices>> futuresPrices;
 
-    private List<ProductPrices> callPrices;
-    private List<ProductPrices> putPrices;
+    private HashMap<LocalDate, List<ProductPrices>> callPrices;
+    private HashMap<LocalDate, List<ProductPrices>> putPrices;
     public ProductInformation(List<Product> products) {
         Assert.notNull(products);
         this.productId = products.get(0).getProductId();
@@ -50,28 +52,40 @@ public class ProductInformation implements Serializable {
         this.isin = products.get(0).getIsin();
 
         if (products.get(0).getInstrumentType().equals("Option")) {
-            callPrices = new ArrayList<>();
-            putPrices = new ArrayList<>();
+            callPrices = new HashMap<>();
+            putPrices = new HashMap<>();
             for (Product option : products) {
                 if (option.getOptionType().equals("CALL")) {
-                    callPrices.add(new ProductPrices(
-                        option.getMaturityDate(),
-                        option.getExercisePrice(),
-                        option.getSettlementPrice()));
+                    if (!callPrices.containsKey(option.getMaturityDate())) {
+                        callPrices.put(option.getMaturityDate(), new ArrayList<>());
+                    }
+                    callPrices.get(option.getMaturityDate())
+                        .add(new ProductPrices(
+                            option.getId(),
+                            option.getExercisePrice(),
+                            option.getSettlementPrice()));
                 } else {
-                    putPrices.add(new ProductPrices(
-                        option.getMaturityDate(),
-                        option.getExercisePrice(),
-                        option.getSettlementPrice()));
+                    if (!putPrices.containsKey(option.getMaturityDate())) {
+                        putPrices.put(option.getMaturityDate(), new ArrayList<>());
+                    }
+                    putPrices.get(option.getMaturityDate())
+                        .add(new ProductPrices(
+                            option.getId(),
+                            option.getExercisePrice(),
+                            option.getSettlementPrice()));
                 }
             }
         } else {
-            futuresPrices = new ArrayList<>();
+            futuresPrices = new HashMap<>();
             for (Product future : products) {
-                futuresPrices.add(new ProductPrices(
-                    future.getMaturityDate(),
-                    future.getExercisePrice(),
-                    future.getSettlementPrice()));
+                if (!futuresPrices.containsKey(future.getMaturityDate())) {
+                    futuresPrices.put(future.getMaturityDate(), new ArrayList<>());
+                }
+                futuresPrices.get(future.getMaturityDate())
+                    .add(new ProductPrices(
+                        future.getId(),
+                        future.getExercisePrice(),
+                        future.getSettlementPrice()));
             }
             System.out.print(futuresPrices.size());
         }
@@ -87,7 +101,7 @@ public class ProductInformation implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private LocalDate maturityDate;
+        private String _id;
         private Double exercisePrice;
         private Double settlementPrice;
 
