@@ -2,6 +2,7 @@ package com.easymargining.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.easymargining.domain.Product;
+import com.easymargining.domain.ProductInformation;
 import com.easymargining.service.ProductService;
 import com.easymargining.domain.EurexMarketDataEnvironment;
 import com.easymargining.web.rest.util.HeaderUtil;
@@ -141,7 +142,7 @@ public class ProductResource {
     }
 
     /**
-     * GET  /products/byInstrumentType/:instrumentType : get products of type instrumentType (F for futures or O for option).
+     * GET  /products/byInstrumentType/:instrumentType : get products of type instrumentType (Future or Option).
      *
      * @param instrumentType the instrument type of the products to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
@@ -161,8 +162,7 @@ public class ProductResource {
     }
 
     /**
-     * POST  /products/loadEurexProductDefs : post the EurexSettlementPriceDefinitions of the product in the
-     *  productList.csv file.
+     * POST  /products/loadProduct : post the EurexSettlementPriceDefinitions of the products
      *
      * @param
      * @return the ResponseEntity with status 200 (OK)
@@ -171,9 +171,8 @@ public class ProductResource {
     @RequestMapping(value = "/products/loadProducts",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    @Timed
     public ResponseEntity<Void> loadProducts() {
-        log.debug("REST request to loadEurexProductsDefs : {}");
+        log.debug("REST request to loadProducts : {}");
 
         // Initialize Product Definition Referential
         try {
@@ -184,5 +183,26 @@ public class ProductResource {
             ex.printStackTrace();
         }
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * GET  /products/productInformation/:productId : get products information (product description + list of maturities
+     * and strikes associated)
+     *
+     * @param productId the productId of the products to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
+     */
+    @RequestMapping(value = "/products/productInformation/{productId}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public ResponseEntity<ProductInformation> getProductInformation(@PathVariable String productId) {
+        log.debug("REST request to get ProductsInformation for productId : {}", productId);
+        ProductInformation productInformation = productService.getProductInformation(productId);
+        return Optional.ofNullable(productInformation)
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 }

@@ -16,22 +16,8 @@
             ]
         },
         {
-            "fieldName": "MaturityYear",
-            "fieldType": "Integer",
-            "fieldValidateRules": [
-                "required"
-            ]
-        },
-        {
-            "fieldName": "MaturityMonth",
-            "fieldType": "Integer",
-            "fieldValidateRules": [
-                "required"
-            ]
-        },
-        {
-            "fieldName": "MaturityDay",
-            "fieldType": "Integer",
+            "fieldName": "MaturityDate",
+            "fieldType": "LocalDate",
             "fieldValidateRules": [
                 "required"
             ]

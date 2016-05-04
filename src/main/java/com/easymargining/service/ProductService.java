@@ -1,8 +1,7 @@
 package com.easymargining.service;
 
-import com.easymargining.domain.ContractMaturity;
-import com.easymargining.domain.ContractMaturityComparator;
 import com.easymargining.domain.Product;
+import com.easymargining.domain.ProductInformation;
 import com.easymargining.repository.ProductRepository;
 import com.opengamma.margining.eurex.prisma.replication.market.parsers.EurexSettlementPriceDefinition;
 import com.opengamma.margining.eurex.prisma.replication.market.parsers.EurexSettlementPricesParser;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 @Service
 public class ProductService {
@@ -78,18 +76,20 @@ public class ProductService {
 
    public static Product convertFromEurex(EurexSettlementPriceDefinition eurexProductDefinition, LocalDate effectiveDate) {
 
+       LocalDate maturityDate = LocalDate.of( eurexProductDefinition.getProduct().getExpirationDate().getYear(),
+           eurexProductDefinition.getProduct().getExpirationDate().getMonthValue(),
+           eurexProductDefinition.getProduct().getExpirationDate().getDayOfMonth());
+
         Product product = new Product(
             null,
             eurexProductDefinition.getProduct().getProductId(),
             effectiveDate,
-            eurexProductDefinition.getProduct().getExpirationDate().getYear(),
-            eurexProductDefinition.getProduct().getExpirationDate().getMonthValue(),
-            eurexProductDefinition.getProduct().getExpirationDate().getDayOfMonth(),
+            maturityDate,
             eurexProductDefinition.getProduct().getSeriesDefinition().getVersionNumber(),
             eurexProductDefinition.getProduct().getSeriesDefinition().getSettlementType().toString(),
             eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().get().name() : "",
             eurexProductDefinition.getProduct().getSeriesDefinition().getExercisePrice(),
-            "EUR",
+            eurexProductDefinition.getProduct().getCurrency().toString(),
             eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().get().name() : "" ,
             eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? "Option" : "Future",
             eurexProductDefinition.getProduct().getTickSize(),
@@ -140,14 +140,7 @@ public class ProductService {
         return productRepository.findByEffectiveDate(effectiveDate);
     }
 
-   /* public List<EurexSettlementPriceDefinition> findAllProductDefs() {
-        return eurexProductRepository.findAll();
-    }
-
-    public List<EurexSettlementPriceDefinition> findProductWithCriteria(String productType, String like) {
-        return eurexProductRepository.findByTypeAndProductNameLikeOrEurexCodeLike(productType, like, like);
-    }*/
-
+    /*
     public Set<ContractMaturity> getMaturities(String productId) {
         List<Product> products = productRepository.findMaturitiesByProductId(productId);
         Set<ContractMaturity> maturitiesSet= new ConcurrentSkipListSet<>(new ContractMaturityComparator());
@@ -168,25 +161,14 @@ public class ProductService {
         });
         return strikes;
     }
+    */
 
     public List<Product> getProducts(String productId) {
         return productRepository.findByProductId(productId);
     }
 
-    //Product Type = Future or Option
-    public List<Product> getProductsByType(String productType) {
-
-        List<String> parameter = new ArrayList<>();
-        parameter.add("C");
-        parameter.add("P");
-
-        if (productType.equals("Option")) {
-            return productRepository.findByOptionTypeIn(parameter);
-        } else if (productType.equals("Future")) {
-            return productRepository.findByOptionTypeNotIn(parameter);
-        }
-
-        return new ArrayList<>();
-
+    public ProductInformation getProductInformation(String productId) {
+        return new ProductInformation(getProducts(productId));
     }
+
 }

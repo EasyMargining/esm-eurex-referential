@@ -14,7 +14,6 @@ import java.util.Objects;
 /**
  * A Product.
  */
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "product")
@@ -34,16 +33,8 @@ public class Product implements Serializable {
     private LocalDate effectiveDate;
 
     @NotNull
-    @Field("maturity_year")
-    private Integer MaturityYear;
-
-    @NotNull
-    @Field("maturity_month")
-    private Integer MaturityMonth;
-
-    @NotNull
-    @Field("maturity_day")
-    private Integer MaturityDay;
+    @Field("maturity_date")
+    private LocalDate MaturityDate;
 
     @Field("version_number")
     private Integer versionNumber;
@@ -120,28 +111,12 @@ public class Product implements Serializable {
         this.effectiveDate = effectiveDate;
     }
 
-    public Integer getMaturityYear() {
-        return MaturityYear;
+    public LocalDate getMaturityDate() {
+        return MaturityDate;
     }
 
-    public void setMaturityYear(Integer MaturityYear) {
-        this.MaturityYear = MaturityYear;
-    }
-
-    public Integer getMaturityMonth() {
-        return MaturityMonth;
-    }
-
-    public void setMaturityMonth(Integer MaturityMonth) {
-        this.MaturityMonth = MaturityMonth;
-    }
-
-    public Integer getMaturityDay() {
-        return MaturityDay;
-    }
-
-    public void setMaturityDay(Integer MaturityDay) {
-        this.MaturityDay = MaturityDay;
+    public void setMaturityDate(LocalDate MaturityDate) {
+        this.MaturityDate = MaturityDate;
     }
 
     public Integer getVersionNumber() {
@@ -306,9 +281,7 @@ public class Product implements Serializable {
             "id=" + id +
             ", productId='" + productId + "'" +
             ", effectiveDate='" + effectiveDate + "'" +
-            ", MaturityYear='" + MaturityYear + "'" +
-            ", MaturityMonth='" + MaturityMonth + "'" +
-            ", MaturityDay='" + MaturityDay + "'" +
+            ", MaturityDate='" + MaturityDate + "'" +
             ", versionNumber='" + versionNumber + "'" +
             ", productSettlementType='" + productSettlementType + "'" +
             ", optionType='" + optionType + "'" +
