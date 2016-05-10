@@ -8,9 +8,7 @@ import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by rjean030116 on 03/05/2016.
@@ -35,10 +33,10 @@ public class ProductInformation implements Serializable {
     private String bloombergUrl;
     private String isin;
 
-    private HashMap<LocalDate, List<ProductPrices>> futuresPrices;
+    private TreeMap<LocalDate, List<ProductPrices>> futuresPrices;
 
-    private HashMap<LocalDate, List<ProductPrices>> callPrices;
-    private HashMap<LocalDate, List<ProductPrices>> putPrices;
+    private TreeMap<LocalDate, List<ProductPrices>> callPrices;
+    private TreeMap<LocalDate, List<ProductPrices>> putPrices;
     public ProductInformation(List<Product> products) {
         Assert.notNull(products);
         this.productId = products.get(0).getProductId();
@@ -52,8 +50,8 @@ public class ProductInformation implements Serializable {
         this.isin = products.get(0).getIsin();
 
         if (products.get(0).getInstrumentType().equals("Option")) {
-            callPrices = new HashMap<>();
-            putPrices = new HashMap<>();
+            callPrices = new TreeMap<>();
+            putPrices = new TreeMap<>();
             for (Product option : products) {
                 if (option.getOptionType().equals("CALL")) {
                     if (!callPrices.containsKey(option.getMaturityDate())) {
@@ -76,7 +74,7 @@ public class ProductInformation implements Serializable {
                 }
             }
         } else {
-            futuresPrices = new HashMap<>();
+            futuresPrices = new TreeMap<>();
             for (Product future : products) {
                 if (!futuresPrices.containsKey(future.getMaturityDate())) {
                     futuresPrices.put(future.getMaturityDate(), new ArrayList<>());
