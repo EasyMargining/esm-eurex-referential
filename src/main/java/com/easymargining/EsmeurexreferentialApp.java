@@ -2,13 +2,12 @@ package com.easymargining;
 
 import com.easymargining.config.Constants;
 import com.easymargining.config.JHipsterProperties;
-
 import com.easymargining.domain.EurexMarketDataEnvironment;
-import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.*;
+import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -53,12 +52,12 @@ public class EsmeurexreferentialApp {
             log.info("Running with Spring profile(s) : {}", Arrays.toString(env.getActiveProfiles()));
             Collection<String> activeProfiles = Arrays.asList(env.getActiveProfiles());
             if (activeProfiles.contains(Constants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(Constants.SPRING_PROFILE_PRODUCTION)) {
-                log.error("You have misconfigured your application! " +
-                    "It should not run with both the 'dev' and 'prod' profiles at the same time.");
+                log.error("You have misconfigured your application! It should not run " +
+                    "with both the 'dev' and 'prod' profiles at the same time.");
             }
             if (activeProfiles.contains(Constants.SPRING_PROFILE_DEVELOPMENT) && activeProfiles.contains(Constants.SPRING_PROFILE_CLOUD)) {
-                log.error("You have misconfigured your application! " +
-                    "It should not run with both the 'dev' and 'cloud' profiles at the same time.");
+                log.error("You have misconfigured your application! It should not" +
+                    "run with both the 'dev' and 'cloud' profiles at the same time.");
             }
         }
     }
@@ -69,8 +68,7 @@ public class EsmeurexreferentialApp {
      * @param args the command line arguments
      * @throws UnknownHostException if the local host name could not be resolved into an address
      */
-    public static void main(String[] args) throws UnknownHostException, ParseException {
-
+    public static void main(String[] args) throws UnknownHostException {
         SpringApplication app = new SpringApplication(EsmeurexreferentialApp.class);
         SimpleCommandLinePropertySource source = new SimpleCommandLinePropertySource(args);
         addDefaultProfile(app, source);
@@ -88,6 +86,7 @@ public class EsmeurexreferentialApp {
         log.info("\n----------------------------------------------------------\n\t" +
         "Config Server: \t{}\n----------------------------------------------------------",
             configServerStatus == null ? "Not found or not setup for this application" : configServerStatus);
+
         String valuationDateStr = env.getProperty("marketdata.valuationdate");
         LocalDate valuationDate = LocalDate.parse(valuationDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String marketDataDirectory = env.getProperty("marketdata.directory");

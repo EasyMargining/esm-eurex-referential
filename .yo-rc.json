@@ -1,6 +1,6 @@
 {
   "generator-jhipster": {
-    "jhipsterVersion": "3.0.0",
+    "jhipsterVersion": "3.2.1",
     "baseName": "esmeurexreferential",
     "packageName": "com.easymargining",
     "packageFolder": "com/easymargining",
@@ -20,6 +20,10 @@
       "cucumber"
     ],
     "skipClient": true,
-    "skipUserManagement": true
+    "skipUserManagement": true,
+    "clusteredHttpSession": "no",
+    "websocket": "no",
+    "enableSocialSignIn": false,
+    "jhiPrefix": "jhi"
   }
 }

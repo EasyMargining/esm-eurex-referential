@@ -13,8 +13,13 @@
 eureka:
     client:
         enabled: false
+    instance:
+        appname: esmeurexreferential
+        instanceId: esmeurexreferential:${spring.application.instance_id:${random.value}}
 
 spring:
+    application:
+        name: esmeurexreferential
     data:
         mongodb:
             host: localhost
@@ -51,9 +56,9 @@ jhipster:
     security:
         authentication:
             jwt:
-                secret: jwt-secret-key
-                # Token is valid 30 minutes
-                tokenValidityInSeconds: 1800
+                secret: e9b59f49257e3982d722b457cbec5632a04f36ef
+                # Token is valid 24 hours
+                tokenValidityInSeconds: 86400
     metrics: # DropWizard Metrics configuration, used by MetricsConfiguration
         jmx.enabled: true
     swagger:
@@ -66,3 +71,4 @@ jhipster:
         contactEmail:
         license:
         licenseUrl:
+        enabled: false

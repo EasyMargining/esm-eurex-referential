@@ -20,6 +20,9 @@ ribbon:
     eureka:
         enabled: true
 
+management:
+    context-path: /management
+
 spring:
     application:
         name: esmeurexreferential
@@ -53,12 +56,6 @@ jhipster:
         #max-age: 1800
     mail:
         from: esmeurexreferential@localhost
-    security:
-        authentication:
-            jwt:
-                secret: e9b59f49257e3982d722b457cbec5632a04f36ef
-                # Token is valid 24 hours
-                tokenValidityInSeconds: 86400
     swagger:
         title: esmeurexreferential API
         description: esmeurexreferential API documentation
@@ -69,3 +66,6 @@ jhipster:
         contactEmail:
         license:
         licenseUrl:
+    ribbon:
+        # comma seperated list of profiles to show a ribbon on the GUI
+        displayOnActiveProfiles: dev
