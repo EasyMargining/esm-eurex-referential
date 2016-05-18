@@ -1,5 +1,7 @@
 package com.easymargining.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -11,12 +13,11 @@ import java.util.Objects;
 
 import com.easymargining.domain.enumeration.Exchange;
 
-import com.easymargining.domain.enumeration.State;
-
 /**
  * A Position.
  */
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(collection = "position")
 public class Position implements Serializable {
 
@@ -44,10 +45,6 @@ public class Position implements Serializable {
     @NotNull
     @Field("exchange")
     private Exchange exchange;
-
-    @NotNull
-    @Field("state")
-    private State state;
 
     public String getId() {
         return id;
@@ -97,14 +94,6 @@ public class Position implements Serializable {
         this.exchange = exchange;
     }
 
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -134,7 +123,6 @@ public class Position implements Serializable {
             ", effectiveDate='" + effectiveDate + "'" +
             ", quantity='" + quantity + "'" +
             ", exchange='" + exchange + "'" +
-            ", state='" + state + "'" +
             '}';
     }
 }

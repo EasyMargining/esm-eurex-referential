@@ -36,14 +36,6 @@
             "fieldValidateRules": [
                 "required"
             ]
-        },
-        {
-            "fieldName": "state",
-            "fieldType": "State",
-            "fieldValues": "live, expirated",
-            "fieldValidateRules": [
-                "required"
-            ]
         }
     ],
     "dto": "no",

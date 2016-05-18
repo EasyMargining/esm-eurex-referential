@@ -140,29 +140,6 @@ public class ProductService {
         return productRepository.findByEffectiveDate(effectiveDate);
     }
 
-    /*
-    public Set<ContractMaturity> getMaturities(String productId) {
-        List<Product> products = productRepository.findMaturitiesByProductId(productId);
-        Set<ContractMaturity> maturitiesSet= new ConcurrentSkipListSet<>(new ContractMaturityComparator());
-        products.parallelStream().forEach(product -> {
-            maturitiesSet.add(new ContractMaturity(product.getMaturityYear(), product.getMaturityMonth()));
-        });
-        return maturitiesSet;
-    }
-
-    // Maturity contract Ex : {2022-01}
-    public Set<Double> getStrikes(String productId, ContractMaturity maturity) {
-        log.info("ProductReferentialService::getStrikes( " + productId + ", " + maturity.getContractYear() + maturity.getContractMonth() + " )");
-        List<Product> products = productRepository.findStrikesByProductIdAndContractMaturity(productId, maturity.getContractYear(), maturity.getContractMonth());
-        log.info("ProductReferentialService::getStrikes( " + productId + ", " + maturity.getContractYear() + ", " + maturity.getContractMonth() + " ) return " +products.size() + " products.");
-        Set<Double> strikes = new ConcurrentSkipListSet<>();
-        products.parallelStream().forEach(product -> {
-            strikes.add(product.getExercisePrice());
-        });
-        return strikes;
-    }
-    */
-
     public List<Product> getProducts(String productId) {
         return productRepository.findByProductId(productId);
     }

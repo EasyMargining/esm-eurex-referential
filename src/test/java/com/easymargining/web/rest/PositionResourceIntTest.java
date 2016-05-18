@@ -2,18 +2,18 @@ package com.easymargining.web.rest;
 
 import com.easymargining.EsmeurexreferentialApp;
 import com.easymargining.domain.Position;
-import com.easymargining.domain.enumeration.Exchange;
-import com.easymargining.domain.enumeration.State;
 import com.easymargining.repository.PositionRepository;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import static org.hamcrest.Matchers.hasItem;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.IntegrationTest;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -27,9 +27,10 @@ import java.time.ZoneId;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import com.easymargining.domain.enumeration.Exchange;
 
 /**
  * Test class for the PositionResource REST controller.
@@ -55,9 +56,6 @@ public class PositionResourceIntTest {
 
     private static final Exchange DEFAULT_EXCHANGE = Exchange.eurex;
     private static final Exchange UPDATED_EXCHANGE = Exchange.lse;
-
-    private static final State DEFAULT_STATE = State.live;
-    private static final State UPDATED_STATE = State.expirated;
 
     @Inject
     private PositionRepository positionRepository;
@@ -91,7 +89,6 @@ public class PositionResourceIntTest {
         position.setEffectiveDate(DEFAULT_EFFECTIVE_DATE);
         position.setQuantity(DEFAULT_QUANTITY);
         position.setExchange(DEFAULT_EXCHANGE);
-        position.setState(DEFAULT_STATE);
     }
 
     @Test
@@ -114,7 +111,6 @@ public class PositionResourceIntTest {
         assertThat(testPosition.getEffectiveDate()).isEqualTo(DEFAULT_EFFECTIVE_DATE);
         assertThat(testPosition.getQuantity()).isEqualTo(DEFAULT_QUANTITY);
         assertThat(testPosition.getExchange()).isEqualTo(DEFAULT_EXCHANGE);
-        assertThat(testPosition.getState()).isEqualTo(DEFAULT_STATE);
     }
 
     @Test
@@ -203,23 +199,6 @@ public class PositionResourceIntTest {
     }
 
     @Test
-    public void checkStateIsRequired() throws Exception {
-        int databaseSizeBeforeTest = positionRepository.findAll().size();
-        // set the field null
-        position.setState(null);
-
-        // Create the Position, which fails.
-
-        restPositionMockMvc.perform(post("/api/positions")
-                .contentType(TestUtil.APPLICATION_JSON_UTF8)
-                .content(TestUtil.convertObjectToJsonBytes(position)))
-                .andExpect(status().isBadRequest());
-
-        List<Position> positions = positionRepository.findAll();
-        assertThat(positions).hasSize(databaseSizeBeforeTest);
-    }
-
-    @Test
     public void getAllPositions() throws Exception {
         // Initialize the database
         positionRepository.save(position);
@@ -233,8 +212,7 @@ public class PositionResourceIntTest {
                 .andExpect(jsonPath("$.[*].portfolioId").value(hasItem(DEFAULT_PORTFOLIO_ID.toString())))
                 .andExpect(jsonPath("$.[*].effectiveDate").value(hasItem(DEFAULT_EFFECTIVE_DATE.toString())))
                 .andExpect(jsonPath("$.[*].quantity").value(hasItem(DEFAULT_QUANTITY.doubleValue())))
-                .andExpect(jsonPath("$.[*].exchange").value(hasItem(DEFAULT_EXCHANGE.toString())))
-                .andExpect(jsonPath("$.[*].state").value(hasItem(DEFAULT_STATE.toString())));
+                .andExpect(jsonPath("$.[*].exchange").value(hasItem(DEFAULT_EXCHANGE.toString())));
     }
 
     @Test
@@ -251,8 +229,7 @@ public class PositionResourceIntTest {
             .andExpect(jsonPath("$.portfolioId").value(DEFAULT_PORTFOLIO_ID.toString()))
             .andExpect(jsonPath("$.effectiveDate").value(DEFAULT_EFFECTIVE_DATE.toString()))
             .andExpect(jsonPath("$.quantity").value(DEFAULT_QUANTITY.doubleValue()))
-            .andExpect(jsonPath("$.exchange").value(DEFAULT_EXCHANGE.toString()))
-            .andExpect(jsonPath("$.state").value(DEFAULT_STATE.toString()));
+            .andExpect(jsonPath("$.exchange").value(DEFAULT_EXCHANGE.toString()));
     }
 
     @Test
@@ -276,7 +253,6 @@ public class PositionResourceIntTest {
         updatedPosition.setEffectiveDate(UPDATED_EFFECTIVE_DATE);
         updatedPosition.setQuantity(UPDATED_QUANTITY);
         updatedPosition.setExchange(UPDATED_EXCHANGE);
-        updatedPosition.setState(UPDATED_STATE);
 
         restPositionMockMvc.perform(put("/api/positions")
                 .contentType(TestUtil.APPLICATION_JSON_UTF8)
@@ -292,7 +268,6 @@ public class PositionResourceIntTest {
         assertThat(testPosition.getEffectiveDate()).isEqualTo(UPDATED_EFFECTIVE_DATE);
         assertThat(testPosition.getQuantity()).isEqualTo(UPDATED_QUANTITY);
         assertThat(testPosition.getExchange()).isEqualTo(UPDATED_EXCHANGE);
-        assertThat(testPosition.getState()).isEqualTo(UPDATED_STATE);
     }
 
     @Test

@@ -22,16 +22,4 @@ public interface ProductRepository extends MongoRepository<Product,String> {
 
     List<Product> findByEffectiveDate(LocalDate effectiveDate);
 
-    List<Product> findByProductIdAndEffectiveDate(String productId, LocalDate effectiveDate);
-
-    List<Product> findByOptionTypeIn(List<String> optionType);
-
-    List<Product> findByOptionTypeNotIn(List<String> optionType);
-
-    @Query(value="{ 'productId' : ?0 }", fields="{ 'contractYear' : 1, 'contractMonth' : 1}")
-    List<Product> findMaturitiesByProductId(String productId);
-
-    @Query(value="{ 'productId' : ?0, 'contractYear' : ?1, 'contractMonth' : ?2 }", fields="{ 'exercisePrice' : 1}")
-    List<Product> findStrikesByProductIdAndContractMaturity(String productId, Integer contractYear, Integer contractMonth);
-
 }

@@ -3,6 +3,8 @@ package com.easymargining.web.rest;
 import com.codahale.metrics.annotation.Timed;
 import com.easymargining.domain.Position;
 import com.easymargining.repository.PositionRepository;
+import com.easymargining.service.PositionService;
+import com.easymargining.service.ProductService;
 import com.easymargining.web.rest.util.HeaderUtil;
 import com.easymargining.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
@@ -19,6 +21,10 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +38,7 @@ public class PositionResource {
     private final Logger log = LoggerFactory.getLogger(PositionResource.class);
 
     @Inject
-    private PositionRepository positionRepository;
+    private PositionService positionService;
 
     /**
      * POST  /positions : Create a new position.
@@ -50,7 +56,7 @@ public class PositionResource {
         if (position.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("position", "idexists", "A new position cannot already have an ID")).body(null);
         }
-        Position result = positionRepository.save(position);
+        Position result = positionService.storePosition(position);
         return ResponseEntity.created(new URI("/api/positions/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("position", result.getId().toString()))
             .body(result);
@@ -74,7 +80,7 @@ public class PositionResource {
         if (position.getId() == null) {
             return createPosition(position);
         }
-        Position result = positionRepository.save(position);
+        Position result = positionService.storePosition(position);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert("position", position.getId().toString()))
             .body(result);
@@ -94,7 +100,7 @@ public class PositionResource {
     public ResponseEntity<List<Position>> getAllPositions(Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to get a page of Positions");
-        Page<Position> page = positionRepository.findAll(pageable);
+        Page<Position> page = positionService.getAllPositions(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/positions");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -111,7 +117,7 @@ public class PositionResource {
     @Timed
     public ResponseEntity<Position> getPosition(@PathVariable String id) {
         log.debug("REST request to get Position : {}", id);
-        Position position = positionRepository.findOne(id);
+        Position position = positionService.getPosition(id);
         return Optional.ofNullable(position)
             .map(result -> new ResponseEntity<>(
                 result,
@@ -125,7 +131,7 @@ public class PositionResource {
      * @param portfolioId the portfolioId of the positions to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the positions, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/positions/byPortfolio/{portfolioId}",
+/*    @RequestMapping(value = "/positions/byPortfolio/{portfolioId}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -137,7 +143,34 @@ public class PositionResource {
                 result,
                 HttpStatus.OK))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }*/
+
+    /**
+     * GET  /positions/byPortfolio/:portfolioId/:valuationDate : get positions for a "portfolioId" at a given time
+     *
+     * @param portfolioId the portfolioId of the positions to retrieve
+     * @param valuationDate the date at which we want to retrieve the positions
+     *
+     * @return the ResponseEntity with status 200 (OK) and with body the positions, or with status 404 (Not Found)
+     */
+    @RequestMapping(value = "/positions/byPortfolio/{portfolioId}/{valuationDate}",
+        method = RequestMethod.GET,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    @Timed
+    public ResponseEntity<List<Position>> getPositionByPortfolio(@PathVariable String portfolioId, @PathVariable String valuationDate) {
+        log.debug("REST request to get Positions : {}", portfolioId);
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate valuationLocalDate = LocalDate.parse(valuationDate, dateFormat);
+
+        List<Position> positions = positionService.getPositionByPortfolioIdAndValuationDate(portfolioId, valuationLocalDate);
+        return Optional.ofNullable(positions)
+            .map(result -> new ResponseEntity<>(
+                result,
+                HttpStatus.OK))
+            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
 
     /**
      * DELETE  /positions/:id : delete the "id" position.
@@ -151,7 +184,7 @@ public class PositionResource {
     @Timed
     public ResponseEntity<Void> deletePosition(@PathVariable String id) {
         log.debug("REST request to delete Position : {}", id);
-        positionRepository.delete(id);
+        positionService.deletePosition(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("position", id.toString())).build();
     }
 
