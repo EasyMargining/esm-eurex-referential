@@ -11,6 +11,7 @@ import java.util.List;
 /**
  * Spring Data MongoDB repository for the Product entity.
  */
+@SuppressWarnings("unused")
 public interface ProductRepository extends MongoRepository<Product,String> {
 
     @Query(value="{ 'instrumentType' : ?0 }", fields="{ 'productId' : 1, 'productName' : 1}")

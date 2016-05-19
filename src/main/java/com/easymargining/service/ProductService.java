@@ -32,7 +32,7 @@ public class ProductService {
 
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
 
-    public Product storeProduct(Product product) {
+    public Product save(Product product) {
         return productRepository.save(product);
     }
 
@@ -49,11 +49,11 @@ public class ProductService {
         return productRepository.save(products);
     }
 
-    public void deleteProduct(String id) {
+    public void delete(String id) {
         productRepository.delete(id);
     }
 
-    public void deleteAllProducts() {
+    public void deleteAll() {
         productRepository.deleteAll();
     }
 
@@ -70,7 +70,7 @@ public class ProductService {
         return null;
     }
 
-    public Product getProduct(String _id) {
+    public Product findOne(String _id) {
         return productRepository.findOne(_id);
     }
 
@@ -134,6 +134,10 @@ public class ProductService {
 
     public List<Product> findAll() {
         return productRepository.findAll();
+    }
+
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
     }
 
     public List<Product> findByEffectiveDate(LocalDate effectiveDate) {

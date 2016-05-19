@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Spring Data MongoDB repository for the Position entity.
  */
+@SuppressWarnings("unused")
 public interface PositionRepository extends MongoRepository<Position,String> {
 
     List<Position> findByPortfolioId(String portfolio_id);

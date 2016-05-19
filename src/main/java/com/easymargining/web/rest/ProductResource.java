@@ -1,10 +1,10 @@
 package com.easymargining.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
+import com.easymargining.domain.EurexMarketDataEnvironment;
 import com.easymargining.domain.Product;
 import com.easymargining.domain.ProductInformation;
 import com.easymargining.service.ProductService;
-import com.easymargining.domain.EurexMarketDataEnvironment;
 import com.easymargining.web.rest.util.HeaderUtil;
 import com.easymargining.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public class ProductResource {
         if (product.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("product", "idexists", "A new product cannot already have an ID")).body(null);
         }
-        Product result = productService.storeProduct(product);
+        Product result = productService.save(product);
         return ResponseEntity.created(new URI("/api/products/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("product", result.getId().toString()))
             .body(result);
@@ -80,7 +80,7 @@ public class ProductResource {
         if (product.getId() == null) {
             return createProduct(product);
         }
-        Product result = productService.storeProduct(product);
+        Product result = productService.save(product);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert("product", product.getId().toString()))
             .body(result);
@@ -100,7 +100,7 @@ public class ProductResource {
     public ResponseEntity<List<Product>> getAllProducts(Pageable pageable)
         throws URISyntaxException {
         log.debug("REST request to get a page of Products");
-        Page<Product> page = productService.getAllProducts(pageable);
+        Page<Product> page = productService.findAll(pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/products");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
@@ -117,7 +117,7 @@ public class ProductResource {
     @Timed
     public ResponseEntity<Product> getProduct(@PathVariable String id) {
         log.debug("REST request to get Product : {}", id);
-        Product product = productService.getProduct(id);
+        Product product = productService.findOne(id);
         return Optional.ofNullable(product)
             .map(result -> new ResponseEntity<>(
                 result,
@@ -137,7 +137,7 @@ public class ProductResource {
     @Timed
     public ResponseEntity<Void> deleteProduct(@PathVariable String id) {
         log.debug("REST request to delete Product : {}", id);
-        productService.deleteProduct(id);
+        productService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("product", id.toString())).build();
     }
 

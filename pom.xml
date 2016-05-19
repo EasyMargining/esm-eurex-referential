@@ -5,7 +5,7 @@
     <parent>
         <artifactId>spring-boot-starter-parent</artifactId>
         <groupId>org.springframework.boot</groupId>
-        <version>1.3.3.RELEASE</version>
+        <version>1.3.5.RELEASE</version>
         <relativePath/>
     </parent>
 
@@ -14,29 +14,6 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>esmeurexreferential</name>
-
-    <repositories>
-        <repository>
-            <id>spring-milestones</id>
-            <url>http://repo.spring.io/milestone</url>
-        </repository>
-        <repository>
-            <id>eurex-local-repository</id>
-            <name>Eurex Local repository</name>
-            <url>file://C://Users//rjean030116//EasyMargining//esm-eurex-referential//eurex-local-repository</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-milestones</id>
-            <url>http://repo.spring.io/milestone</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>eurex-local-repository</id>
-            <url>file://C://Users//rjean030116//EasyMargining//esm-eurex-referential//eurex-local-repository</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <prerequisites>
         <maven>3.0.0</maven>
@@ -62,12 +39,9 @@
         <metrics-spring.version>3.1.3</metrics-spring.version>
         <logstash-logback-encoder.version>4.6</logstash-logback-encoder.version>
         <run.addResources>false</run.addResources>
-        <spring-cloud.version>1.1.0.M5</spring-cloud.version>
-        <spring-security.version>4.0.4.RELEASE</spring-security.version>
+        <spring-cloud.version>Brixton.RELEASE</spring-cloud.version>
+        <spring-security.version>4.1.0.RELEASE</spring-security.version>
         <springfox.version>2.4.0</springfox.version>
-        <lombok.version>1.16.6</lombok.version>
-        <opengamma-eurex.archive>${project.basedir}/opengamma-eurex/pme-1.8.3_eurex-repository.zip</opengamma-eurex.archive>
-        <eurex-local-repository>${project.basedir}/eurex-local-repository</eurex-local-repository>
         <!-- Sonar properties -->
         <project.testresult.directory>${project.build.directory}/test-results</project.testresult.directory>
         <sonar-maven-plugin.version>2.7.1</sonar-maven-plugin.version>
@@ -83,10 +57,34 @@
         <sonar.sources>${project.basedir}/src/main/</sonar.sources>
         <sonar.surefire.reportsPath>${project.testresult.directory}/surefire-reports</sonar.surefire.reportsPath>
         <sonar.tests>${project.basedir}/src/test/</sonar.tests>
+
+        <lombok.version>1.16.6</lombok.version>
+        <eurex-local-repository>${project.basedir}/..esm-eurex-engine/eurex-local-repository</eurex-local-repository>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>eurex-local-repository</id>
+            <name>Eurex Local repository</name>
+            <url>${eurex-local-repository}</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>eurex-local-repository</id>
+            <url>${eurex-local-repository}</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.threeten</groupId>
                 <artifactId>threetenbp</artifactId>
@@ -95,9 +93,7 @@
         </dependencies>
     </dependencyManagement>
 
-
     <dependencies>
-
         <dependency>
             <groupId>com.opengamma.margining</groupId>
             <artifactId>ogm-eurex-prisma-replication</artifactId>
@@ -109,7 +105,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -219,6 +214,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -234,14 +230,12 @@
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--
         <dependency>
             <groupId>io.gatling.highcharts</groupId>
             <artifactId>gatling-charts-highcharts</artifactId>
             <version>${gatling.version}</version>
             <scope>test</scope>
         </dependency>
-        -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -262,9 +256,9 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.mongeez</groupId>
-            <artifactId>mongeez</artifactId>
-            <version>0.9.6</version>
+            <groupId>com.github.mongobee</groupId>
+            <artifactId>mongobee</artifactId>
+            <version>0.10</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
@@ -340,27 +334,34 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
-            <version>${spring-cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-ribbon</artifactId>
-            <version>${spring-cloud.version}</version>
+            <!-- netty's native is pulled, but is useless unless you explicitly add the native binary dependency.
+                 Having it in the classpath without the binary can cause warnings -->
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-transport-native-epoll</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
-            <version>${spring-cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-hystrix</artifactId>
-            <version>${spring-cloud.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-spectator</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-config</artifactId>
-            <version>${spring-cloud.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.retry</groupId>
@@ -450,40 +451,6 @@
             </testResource>
         </testResources>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>truezip-maven-plugin</artifactId>
-                <version>1.2</version>
-                <executions>
-                    <execution>
-                        <id>extract-eurex-repository-archive</id>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <phase>initialize</phase>
-                        <configuration>
-                            <verbose>true</verbose>
-                            <fileset>
-                                <directory>${opengamma-eurex.archive}</directory>
-                                <outputDirectory>${eurex-local-repository}</outputDirectory>
-                            </fileset>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok-maven-plugin</artifactId>
-                <version>1.16.6.1</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>delombok</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.github.ekryd.sortpom</groupId>
                 <artifactId>sortpom-maven-plugin</artifactId>
@@ -670,7 +637,7 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.4.1</version>
+                <version>0.4.5</version>
                 <configuration>
                     <imageName>esmeurexreferential</imageName>
                     <dockerDirectory>src/main/docker</dockerDirectory>
@@ -692,7 +659,7 @@
                     It has no influence on the Maven build itself.
                     Remove when the m2e plugin can correctly bind to Maven lifecycle
                 -->
-                <!--<plugin>
+                <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
                     <version>1.0.0</version>
@@ -706,7 +673,7 @@
                                             jacoco-maven-plugin
                                         </artifactId>
                                         <versionRange>
-                                            [0.7.4,)
+                                            ${jacoco-maven-plugin.version}
                                         </versionRange>
                                         <goals>
                                             <goal>prepare-agent</goal>
@@ -719,7 +686,7 @@
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>
-                </plugin>-->
+                </plugin>
              </plugins>
         </pluginManagement>
     </build>
@@ -774,9 +741,6 @@
                             <filesets>
                                 <fileset>
                                     <directory>target/www/</directory>
-                                </fileset>
-                                <fileset>
-                                    <directory>node_modules</directory>
                                 </fileset>
                             </filesets>
                         </configuration>
