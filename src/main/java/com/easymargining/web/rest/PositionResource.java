@@ -56,7 +56,7 @@ public class PositionResource {
         if (position.getId() != null) {
             return ResponseEntity.badRequest().headers(HeaderUtil.createFailureAlert("position", "idexists", "A new position cannot already have an ID")).body(null);
         }
-        Position result = positionService.storePosition(position);
+        Position result = positionService.save(position);
         return ResponseEntity.created(new URI("/api/positions/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert("position", result.getId().toString()))
             .body(result);
@@ -80,7 +80,7 @@ public class PositionResource {
         if (position.getId() == null) {
             return createPosition(position);
         }
-        Position result = positionService.storePosition(position);
+        Position result = positionService.save(position);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert("position", position.getId().toString()))
             .body(result);
@@ -117,7 +117,7 @@ public class PositionResource {
     @Timed
     public ResponseEntity<Position> getPosition(@PathVariable String id) {
         log.debug("REST request to get Position : {}", id);
-        Position position = positionService.getPosition(id);
+        Position position = positionService.findOne(id);
         return Optional.ofNullable(position)
             .map(result -> new ResponseEntity<>(
                 result,
@@ -184,7 +184,7 @@ public class PositionResource {
     @Timed
     public ResponseEntity<Void> deletePosition(@PathVariable String id) {
         log.debug("REST request to delete Position : {}", id);
-        positionService.deletePosition(id);
+        positionService.delete(id);
         return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert("position", id.toString())).build();
     }
 

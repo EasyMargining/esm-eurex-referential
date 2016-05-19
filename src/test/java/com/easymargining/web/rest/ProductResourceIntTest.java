@@ -305,7 +305,7 @@ public class ProductResourceIntTest {
     @Test
     public void updateProduct() throws Exception {
         // Initialize the database
-        productService.storeProduct(product);
+        productService.save(product);
 
         int databaseSizeBeforeUpdate = productRepository.findAll().size();
 
@@ -367,7 +367,7 @@ public class ProductResourceIntTest {
     @Test
     public void deleteProduct() throws Exception {
         // Initialize the database
-        productService.storeProduct(product);
+        productService.save(product);
 
         int databaseSizeBeforeDelete = productRepository.findAll().size();
 

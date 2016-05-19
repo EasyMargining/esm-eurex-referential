@@ -88,5 +88,5 @@ jhipster:
 # Esm-gateway specific properties
 # ===================================================================
 marketdata:
-    valuationdate: 2015-06-03
+    valuationdate: 2015-11-27
     directory: C:\\HOMEWARE\\pme\\marketdata

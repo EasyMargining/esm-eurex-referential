@@ -29,7 +29,7 @@ public class PositionService {
 
     private final Logger log = LoggerFactory.getLogger(PositionService.class);
 
-    public Position storePosition(Position position) {
+    public Position save(Position position) {
         return positionRepository.save(position);
     }
 
@@ -37,11 +37,11 @@ public class PositionService {
         return positionRepository.findAll(pageable);
     }
 
-    public Position getPosition(String id) {
+    public Position findOne(String id) {
         return positionRepository.findOne(id);
     }
 
-    public void deletePosition(String id) {
+    public void delete(String id) {
         positionRepository.delete(id);
     }
 
@@ -51,7 +51,7 @@ public class PositionService {
 
         for (Iterator<Position> positionIterator = positions.iterator(); positionIterator.hasNext();) {
             Position position = positionIterator.next();
-            Product product = productService.getProduct(position.getProductId());
+            Product product = productService.findOne(position.getProductId());
 
             if (product.getMaturityDate().isBefore(valuationDate)) {
                 // Remove positions with maturity date < valuationDate
