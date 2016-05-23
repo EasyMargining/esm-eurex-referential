@@ -2,6 +2,7 @@ package com.easymargining.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.easymargining.domain.EurexMarketDataEnvironment;
+import com.easymargining.domain.EurexProductEnvironment;
 import com.easymargining.domain.Product;
 import com.easymargining.domain.ProductInformation;
 import com.easymargining.service.ProductService;
@@ -19,11 +20,13 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -186,19 +189,41 @@ public class ProductResource {
     }
 
     /**
-     * GET  /products/productInformation/:productId : get products information (product description + list of maturities
+     * POST  /products/loadProductDefs : post the definition of the Eurex Product
+     *
+     * @param
+     * @return the ResponseEntity with status 200 (OK)
+     */
+
+    @RequestMapping(value = "/products/loadProductsDefinitions",
+        method = RequestMethod.POST,
+        produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> loadProductsDefinitions() {
+        log.debug("REST request to loadProductsDefinitions : {}");
+
+        // Initialize Product Definition Referential
+        List<URL> list = new ArrayList<URL>();
+        list.add(EurexProductEnvironment.getInstance().getEurexProductDefinition());
+        LocalDate valuationDate = EurexProductEnvironment.getInstance().getValuationDate();
+        productService.loadEurexProductDefinition(list, valuationDate);
+
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * GET  /products/productInformation/:productIdentifier : get products information (product description + list of maturities
      * and strikes associated)
      *
-     * @param productId the productId of the products to retrieve
+     * @param productIdentifier the productId or productName of the products to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/products/productInformation/{productId}",
+    @RequestMapping(value = "/products/productInformation/{productIdentifier}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public ResponseEntity<ProductInformation> getProductInformation(@PathVariable String productId) {
-        log.debug("REST request to get ProductsInformation for productId : {}", productId);
-        ProductInformation productInformation = productService.getProductInformation(productId);
+    public ResponseEntity<ProductInformation> getProductInformation(@PathVariable String productIdentifier) {
+        log.debug("REST request to get ProductsInformation for productId : {}", productIdentifier);
+        ProductInformation productInformation = productService.getProductInformation(productIdentifier);
         return Optional.ofNullable(productInformation)
             .map(result -> new ResponseEntity<>(
                 result,

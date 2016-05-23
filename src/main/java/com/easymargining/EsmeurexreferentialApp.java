@@ -4,6 +4,7 @@ import com.easymargining.config.Constants;
 import com.easymargining.config.JHipsterProperties;
 
 import com.easymargining.domain.EurexMarketDataEnvironment;
+import com.easymargining.domain.EurexProductEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -88,12 +89,18 @@ public class EsmeurexreferentialApp {
         "Config Server: \t{}\n----------------------------------------------------------",
             configServerStatus == null ? "Not found or not setup for this application" : configServerStatus);
 
-        String valuationDateStr = env.getProperty("marketdata.valuationdate");
-        LocalDate valuationDate = LocalDate.parse(valuationDateStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String valuationDateMarketDataStr = env.getProperty("marketdata.valuationdate");
+        LocalDate valuationDateMarketData = LocalDate.parse(valuationDateMarketDataStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String marketDataDirectory = env.getProperty("marketdata.directory");
-
         // Initialize EurexMarketDataEnvironment
-        EurexMarketDataEnvironment.init(marketDataDirectory, valuationDate);
+        EurexMarketDataEnvironment.init(marketDataDirectory, valuationDateMarketData);
+
+        String valuationDateProducDefinitiontStr = env.getProperty("productDefinition.valuationdate");
+        LocalDate valuationDateProductDefinition = LocalDate.parse(valuationDateProducDefinitiontStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String productEnvironmentDirectory = env.getProperty("productDefinition.directory");
+        // Initialize EurexProductEnvironment
+        EurexProductEnvironment.init(productEnvironmentDirectory, valuationDateProductDefinition);
+
     }
 
     /**

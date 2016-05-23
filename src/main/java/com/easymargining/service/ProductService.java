@@ -1,8 +1,11 @@
 package com.easymargining.service;
 
+import com.easymargining.domain.EurexProductDefinition;
 import com.easymargining.domain.Product;
 import com.easymargining.domain.ProductInformation;
+import com.easymargining.repository.ProductDefinitionRepository;
 import com.easymargining.repository.ProductRepository;
+import com.easymargining.tools.eurex.EurexProductDefinitionParser;
 import com.opengamma.margining.eurex.prisma.replication.market.parsers.EurexSettlementPriceDefinition;
 import com.opengamma.margining.eurex.prisma.replication.market.parsers.EurexSettlementPricesParser;
 import org.slf4j.Logger;
@@ -26,9 +29,8 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
-    private Set<String> optionIdentifierSet = new HashSet<>();
-
-    private Set<String> futuresIdentifierSet = new HashSet<>();
+    @Autowired
+    private ProductDefinitionRepository productDefRepository;
 
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
 
@@ -37,15 +39,6 @@ public class ProductService {
     }
 
     public List<Product> storeProducts(List<Product> products) {
-        for (Product product : products) {
-            if (product.getInstrumentType().equals("Future")) {
-                futuresIdentifierSet.add(product.getProductName());
-                futuresIdentifierSet.add(product.getProductId());
-            } else {
-                optionIdentifierSet.add(product.getProductName());
-                optionIdentifierSet.add(product.getProductId());
-            }
-        }
         return productRepository.save(products);
     }
 
@@ -62,12 +55,13 @@ public class ProductService {
     }
 
     public Set<String> getProductIdentifiersByInstrumentType(String instrumentType) {
-        if (instrumentType.equals("Future")) {
-            return futuresIdentifierSet;
-        } else if (instrumentType.equals("Option")) {
-            return optionIdentifierSet;
-        }
-        return null;
+        Set<String> productIdentifiersList = new HashSet<>();
+        List<EurexProductDefinition> productDefinitionsList = productDefRepository.findByType(instrumentType);
+        productDefinitionsList.forEach((productDefinition) -> {
+            productIdentifiersList.add(productDefinition.getProductName());
+            productIdentifiersList.add(productDefinition.getEurexCode());
+        });
+        return productIdentifiersList;
     }
 
     public Product findOne(String _id) {
@@ -128,6 +122,22 @@ public class ProductService {
         }
     }
 
+    public void loadEurexProductDefinition(List<URL> files, LocalDate effectiveDate) {
+        log.info("ProductReferentialService::loadEurexProductDefinition( " + files.toString() + ", " + effectiveDate + " )");
+        files.forEach( (file) -> {
+
+            List<EurexProductDefinition> productDefinitions = null;
+            try {
+                productDefinitions = EurexProductDefinitionParser.parse(file);
+                productDefRepository.save(productDefinitions);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+
     public List<Product> findDistinctProductByEffectiveDate(LocalDate effectiveDate) {
         return productRepository.findDistinctProductByEffectiveDate(effectiveDate);
     }
@@ -144,12 +154,14 @@ public class ProductService {
         return productRepository.findByEffectiveDate(effectiveDate);
     }
 
-    public List<Product> getProducts(String productId) {
+    public List<Product> getProductsByProductIdentifier(String productIdentifier) {
+        EurexProductDefinition eurexProductDefinition = productDefRepository.findByEurexCodeLikeOrProductNameLike(productIdentifier, productIdentifier);
+        String productId = eurexProductDefinition.getEurexCode();
         return productRepository.findByProductId(productId);
     }
 
-    public ProductInformation getProductInformation(String productId) {
-        return new ProductInformation(getProducts(productId));
+    public ProductInformation getProductInformation(String productIdentifier) {
+        return new ProductInformation(getProductsByProductIdentifier(productIdentifier));
     }
 
 }

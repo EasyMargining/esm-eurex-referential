@@ -90,3 +90,7 @@ jhipster:
 marketdata:
     valuationdate: 2015-11-27
     directory: C:\\HOMEWARE\\pme\\marketdata
+
+productDefinition:
+    valuationdate: 2015-11-27
+    directory: C:\\HOMEWARE\\pme\\productDefinition
