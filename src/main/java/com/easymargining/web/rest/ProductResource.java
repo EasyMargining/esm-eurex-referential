@@ -150,7 +150,7 @@ public class ProductResource {
      * @param instrumentType the instrument type of the products to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/products/byInstrumentType/{instrumentType}",
+    @RequestMapping(value = "/products/instrument-type/{instrumentType}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
@@ -171,7 +171,7 @@ public class ProductResource {
      * @return the ResponseEntity with status 200 (OK)
      */
 
-    @RequestMapping(value = "/products/loadProducts",
+    @RequestMapping(value = "/products/load-products",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> loadProducts() {
@@ -195,7 +195,7 @@ public class ProductResource {
      * @return the ResponseEntity with status 200 (OK)
      */
 
-    @RequestMapping(value = "/products/loadProductsDefinitions",
+    @RequestMapping(value = "/products/load-products-definitions",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> loadProductsDefinitions() {
@@ -217,7 +217,7 @@ public class ProductResource {
      * @param productIdentifier the productId or productName of the products to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/products/productInformation/{productIdentifier}",
+    @RequestMapping(value = "/products/product-information/{productIdentifier}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed

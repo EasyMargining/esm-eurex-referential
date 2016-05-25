@@ -126,26 +126,6 @@ public class PositionResource {
     }
 
     /**
-     * GET  /positions/byPortfolio/:portfolioId : get positions for a "portfolioId"
-     *
-     * @param portfolioId the portfolioId of the positions to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the positions, or with status 404 (Not Found)
-     */
-/*    @RequestMapping(value = "/positions/byPortfolio/{portfolioId}",
-        method = RequestMethod.GET,
-        produces = MediaType.APPLICATION_JSON_VALUE)
-    @Timed
-    public ResponseEntity<List<Position>> getPositionByPortfolio(@PathVariable String portfolioId) {
-        log.debug("REST request to get Positions : {}", portfolioId);
-        List<Position> positions = positionRepository.findByPortfolioId(portfolioId);
-        return Optional.ofNullable(positions)
-            .map(result -> new ResponseEntity<>(
-                result,
-                HttpStatus.OK))
-            .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }*/
-
-    /**
      * GET  /positions/byPortfolio/:portfolioId/:valuationDate : get positions for a "portfolioId" at a given time
      *
      * @param portfolioId the portfolioId of the positions to retrieve
@@ -153,7 +133,7 @@ public class PositionResource {
      *
      * @return the ResponseEntity with status 200 (OK) and with body the positions, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/positions/byPortfolio/{portfolioId}/{valuationDate}",
+    @RequestMapping(value = "/positions/portfolio/{portfolioId}/valuationDate/{valuationDate}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
