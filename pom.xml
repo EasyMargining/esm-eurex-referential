@@ -103,6 +103,10 @@
                     <artifactId>metrics-core</artifactId>
                     <groupId>io.dropwizard.metrics</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>metrics-core</artifactId>
+                    <groupId>com.codahale.metrics</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>

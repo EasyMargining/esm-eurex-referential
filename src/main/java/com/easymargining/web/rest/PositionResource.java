@@ -133,7 +133,7 @@ public class PositionResource {
      *
      * @return the ResponseEntity with status 200 (OK) and with body the positions, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/positions/portfolio/{portfolioId}/valuationDate/{valuationDate}",
+    @RequestMapping(value = "/positions/portfolio/{portfolioId}/valuation-date/{valuationDate}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
