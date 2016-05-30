@@ -1,16 +1,11 @@
 package com.easymargining.domain;
 
-import com.opengamma.margining.eurex.prisma.data.MarketDataFileResolver;
-import com.opengamma.margining.eurex.prisma.loader.MarketDataLoaders;
-import com.opengamma.margining.eurex.prisma.replication.data.EurexEtdMarketDataLoadRequest;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by rjean030116 on 20/05/2016.

@@ -1,7 +1,6 @@
 package com.easymargining.aop.logging;
 
 import com.easymargining.config.Constants;
-
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;

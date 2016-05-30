@@ -4,15 +4,11 @@ import com.easymargining.domain.Position;
 import com.easymargining.domain.Product;
 import com.easymargining.domain.enumeration.Exchange;
 import com.easymargining.repository.PositionRepository;
-import com.easymargining.repository.ProductRepository;
-import org.apache.shiro.crypto.hash.Hash;
-import org.jboss.logging.annotations.Pos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

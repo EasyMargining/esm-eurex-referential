@@ -2,9 +2,7 @@ package com.easymargining.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
 import com.easymargining.domain.Position;
-import com.easymargining.repository.PositionRepository;
 import com.easymargining.service.PositionService;
-import com.easymargining.service.ProductService;
 import com.easymargining.web.rest.util.HeaderUtil;
 import com.easymargining.web.rest.util.PaginationUtil;
 import org.slf4j.Logger;
@@ -21,10 +19,8 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 

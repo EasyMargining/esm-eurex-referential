@@ -1,7 +1,6 @@
 package com.easymargining.repository;
 
 import com.easymargining.domain.Portfolio;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

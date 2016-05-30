@@ -1,7 +1,6 @@
 package com.easymargining.security;
 
 import com.easymargining.config.Constants;
-
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 

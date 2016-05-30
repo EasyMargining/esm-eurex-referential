@@ -1,22 +1,12 @@
 package com.easymargining.domain;
 
-import com.opengamma.margining.core.MarginEnvironment;
-import com.opengamma.margining.core.MarginEnvironmentFactory;
 import com.opengamma.margining.eurex.prisma.data.MarketDataFileResolver;
 import com.opengamma.margining.eurex.prisma.loader.MarketDataLoaders;
-import com.opengamma.margining.eurex.prisma.replication.EurexPrismaReplication;
 import com.opengamma.margining.eurex.prisma.replication.data.EurexEtdMarketDataLoadRequest;
-import com.opengamma.margining.eurex.prisma.replication.data.EurexMarketDataLoadRequest;
-import com.opengamma.margining.eurex.prisma.replication.market.parsers.EurexRiskMeasureConfigParser;
-import com.opengamma.util.tuple.Triple;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import org.threeten.bp.format.DateTimeFormatter;
-import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by gmarchal on 22/02/2016.

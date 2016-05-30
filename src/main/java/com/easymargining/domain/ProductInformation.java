@@ -1,14 +1,13 @@
 package com.easymargining.domain;
 
-import com.fasterxml.jackson.databind.ser.std.StdArraySerializers;
-import com.sleepycat.bind.serial.SerialBase;
 import lombok.*;
-import org.springframework.cglib.core.Local;
 import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
 /**
  * Created by rjean030116 on 03/05/2016.

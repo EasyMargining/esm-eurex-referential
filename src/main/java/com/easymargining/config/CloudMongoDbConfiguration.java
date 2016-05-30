@@ -1,9 +1,8 @@
 package com.easymargining.config;
 
+import com.easymargining.domain.util.JSR310DateConverters.*;
 import com.github.mongobee.Mongobee;
 import com.mongodb.Mongo;
-import com.easymargining.domain.util.JSR310DateConverters.*;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;

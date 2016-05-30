@@ -1,7 +1,6 @@
 package com.easymargining.repository;
 
 import com.easymargining.domain.Product;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
