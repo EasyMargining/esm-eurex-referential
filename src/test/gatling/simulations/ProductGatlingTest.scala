@@ -68,7 +68,7 @@ class ProductGatlingTest extends Simulation {
             .exec(http("Create new product")
             .post("/api/products")
             .headers(headers_http_authenticated)
-            .body(StringBody("""{"id":null, "productId":"SAMPLE_TEXT", "effectiveDate":"2020-01-01T00:00:00.000Z", "MaturityDate":"2020-01-01T00:00:00.000Z", "versionNumber":"0", "productSettlementType":"SAMPLE_TEXT", "optionType":"SAMPLE_TEXT", "exercisePrice":null, "currency":"SAMPLE_TEXT", "exerciseStyleFlag":"SAMPLE_TEXT", "instrumentType":"SAMPLE_TEXT", "tickSize":null, "tickValue":null, "marginStyle":"SAMPLE_TEXT", "liquidityClass":"SAMPLE_TEXT", "liquidationGroup":"SAMPLE_TEXT", "settlementPrice":null, "productName":"SAMPLE_TEXT", "bloombergId":"SAMPLE_TEXT", "bloombergUrl":"SAMPLE_TEXT", "isin":"SAMPLE_TEXT"}""")).asJSON
+            .body(StringBody("""{"id":null, "productDefinitionId":"SAMPLE_TEXT", "MaturityDate":"2020-01-01T00:00:00.000Z", "optionType":"SAMPLE_TEXT", "effectiveDate":"2020-01-01T00:00:00.000Z", "exercisePrice":null, "settlementPrice":null, "versionNumber":"0", "productSettlementType":"SAMPLE_TEXT", "currency":"SAMPLE_TEXT", "exerciseStyleFlag":"SAMPLE_TEXT", "instrumentType":"SAMPLE_TEXT", "tickSize":null, "tickValue":null, "marginStyle":"SAMPLE_TEXT", "liquidityClass":"SAMPLE_TEXT", "liquidationGroup":"SAMPLE_TEXT", "productName":"SAMPLE_TEXT", "bloombergId":"SAMPLE_TEXT", "isin":"SAMPLE_TEXT"}""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_product_url"))).exitHereIfFailed
             .pause(10)

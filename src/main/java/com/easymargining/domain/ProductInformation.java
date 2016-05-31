@@ -22,33 +22,31 @@ public class ProductInformation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String productId;
+    private String productDefinitionId;
     private Double tickSize;
     private Double tickValue;
     private String currency;
     private String marginStyle;
     private String productName;
     private String bloombergId;
-    private String bloombergUrl;
     private String isin;
 
     private TreeMap<LocalDate, List<ProductPrices>> futuresPrices;
 
     private TreeMap<LocalDate, List<ProductPrices>> callPrices;
     private TreeMap<LocalDate, List<ProductPrices>> putPrices;
-    public ProductInformation(List<Product> products) {
+    public ProductInformation(List<Product> products, EurexProductDefinition productDefinition) {
         Assert.notNull(products);
-        this.productId = products.get(0).getProductId();
-        this.tickSize = products.get(0).getTickSize();
-        this.tickValue = products.get(0).getTickValue();
-        this.currency = products.get(0).getCurrency();
-        this.marginStyle = products.get(0).getMarginStyle();
-        this.productName = products.get(0).getProductName();
-        this.bloombergId = products.get(0).getBloombergId();
-        this.bloombergUrl = products.get(0).getBloombergUrl();
-        this.isin = products.get(0).getIsin();
+        this.productDefinitionId = productDefinition.getEurexCode();
+        this.tickSize = Double.parseDouble(productDefinition.getTickSize());
+        this.tickValue = Double.parseDouble(productDefinition.getTickValue());
+        this.currency = productDefinition.getCurrency();
+        //this.marginStyle = products.get(0).getMarginStyle();
+        this.productName = productDefinition.getProductName();
+        this.bloombergId = productDefinition.getBbgCode();
+        this.isin = productDefinition.getIsinCode();
 
-        if (products.get(0).getInstrumentType().equals("Option")) {
+        if (productDefinition.getType().equals("Option")) {
             callPrices = new TreeMap<>();
             putPrices = new TreeMap<>();
             for (Product option : products) {

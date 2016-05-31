@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 @Service
 public class ProductService {
@@ -65,7 +66,18 @@ public class ProductService {
     }
 
     public Product findOne(String _id) {
-        return productRepository.findOne(_id);
+        Product product = productRepository.findOne(_id);
+        EurexProductDefinition productDefinition = productDefRepository.findOne(product.getProductDefinitionId());
+        product.setInstrumentType(productDefinition.getType());
+        product.setProductName(productDefinition.getProductName());
+        product.setBloombergId(productDefinition.getBbgCode());
+        product.setCurrency(productDefinition.getCurrency());
+        product.setIsin(productDefinition.getIsinCode());
+        product.setTickSize(Double.parseDouble(productDefinition.getTickSize()));
+        product.setTickValue(Double.parseDouble(productDefinition.getTickValue()));
+        product.setTradeUnit(productDefinition.getTradUnit());
+        product.setProductSettlementType(productDefinition.getSettlementType());
+        return product;
     }
 
    public static Product convertFromEurex(EurexSettlementPriceDefinition eurexProductDefinition, LocalDate effectiveDate) {
@@ -75,27 +87,12 @@ public class ProductService {
            eurexProductDefinition.getProduct().getExpirationDate().getDayOfMonth());
 
         Product product = new Product(
-            null,
             eurexProductDefinition.getProduct().getProductId(),
-            effectiveDate,
             maturityDate,
-            eurexProductDefinition.getProduct().getSeriesDefinition().getVersionNumber(),
-            eurexProductDefinition.getProduct().getSeriesDefinition().getSettlementType().toString(),
             eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().get().name() : "",
+            effectiveDate,
             eurexProductDefinition.getProduct().getSeriesDefinition().getExercisePrice(),
-            eurexProductDefinition.getProduct().getCurrency().toString(),
-            eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().get().name() : "" ,
-            eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? "Option" : "Future",
-            eurexProductDefinition.getProduct().getTickSize(),
-            eurexProductDefinition.getProduct().getTickValue(),
-            eurexProductDefinition.getProduct().getMarginStyle().toString(),
-            eurexProductDefinition.getProduct().getLiquidityClass(),
-            eurexProductDefinition.getProduct().getLiquidationGroup(),
-            eurexProductDefinition.getSettlementPrice(),
-            "find product name",
-            "find bloombergId",
-            "find bloombergUrl",
-            "find isin"
+            eurexProductDefinition.getSettlementPrice()
             );
         return product;
     }
@@ -110,13 +107,14 @@ public class ProductService {
 
     public void loadProducts(URL file, LocalDate effectiveDate) throws IOException {
         log.info("ProductService::loadProducts( " + file.toString() + ", " + effectiveDate + " )");
-        System.out.print("ProductService::loadProducts( " + file.toString() + ", " + effectiveDate + " )");
         List<EurexSettlementPriceDefinition> eurexProductDefinitions = null;
         try {
             EurexSettlementPricesParser parser = new EurexSettlementPricesParser();
             eurexProductDefinitions = parser.parse(file);
             List<Product> productList = convertFromEurex(eurexProductDefinitions, effectiveDate);
+            log.info("ProductService::loadProducts : all product have been succesfully parsed");
             storeProducts(productList);
+            log.info("ProductService::loadProducts : all product have been successfully stored in MongoDB");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -134,9 +132,7 @@ public class ProductService {
                 e.printStackTrace();
             }
         });
-
     }
-
 
     public List<Product> findDistinctProductByEffectiveDate(LocalDate effectiveDate) {
         return productRepository.findDistinctProductByEffectiveDate(effectiveDate);
@@ -154,14 +150,22 @@ public class ProductService {
         return productRepository.findByEffectiveDate(effectiveDate);
     }
 
-    public List<Product> getProductsByProductIdentifier(String productIdentifier) {
+    public EurexProductDefinition getProductDefinitionByProductIdentifier(String productIdentifier) {
+        log.debug("ProductService::getProductDefinitionByProductIdentifier(" + productIdentifier + ")");
         EurexProductDefinition eurexProductDefinition = productDefRepository.findByEurexCodeLikeOrProductNameLike(productIdentifier, productIdentifier);
-        String productId = eurexProductDefinition.getEurexCode();
-        return productRepository.findByProductId(productId);
+        log.debug("ProductService::getProductDefinitionByProductIdentifier : eurexProductDefinition" + eurexProductDefinition);
+        return eurexProductDefinition;
     }
 
-    public ProductInformation getProductInformation(String productIdentifier) {
-        return new ProductInformation(getProductsByProductIdentifier(productIdentifier));
+    public List<Product> getProductsByProductDefinitionIdAndEffectiveDate(String productDefinitionId, LocalDate effectiveDate) {
+        log.debug("ProductService::getProductsByProductIdentifier(" + productDefinitionId + ", " + effectiveDate + ")");
+        return productRepository.findByProductDefinitionIdAndEffectiveDate(productDefinitionId, effectiveDate);
+    }
+
+    public ProductInformation getProductInformation(String productIdentifier, LocalDate effectiveDate) {
+        EurexProductDefinition productDefinition = getProductDefinitionByProductIdentifier(productIdentifier);
+        List<Product> products = getProductsByProductDefinitionIdAndEffectiveDate(productDefinition.getEurexCode(), effectiveDate);
+        return new ProductInformation(products, productDefinition);
     }
 
 }

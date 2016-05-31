@@ -2,11 +2,22 @@
     "relationships": [],
     "fields": [
         {
-            "fieldName": "productId",
+            "fieldName": "productDefinitionId",
             "fieldType": "String",
             "fieldValidateRules": [
                 "required"
             ]
+        },
+        {
+            "fieldName": "maturityDate",
+            "fieldType": "LocalDate",
+            "fieldValidateRules": [
+                "required"
+            ]
+        },
+        {
+            "fieldName": "optionType",
+            "fieldType": "String"
         },
         {
             "fieldName": "effectiveDate",
@@ -16,11 +27,12 @@
             ]
         },
         {
-            "fieldName": "MaturityDate",
-            "fieldType": "LocalDate",
-            "fieldValidateRules": [
-                "required"
-            ]
+            "fieldName": "exercisePrice",
+            "fieldType": "Double"
+        },
+        {
+            "fieldName": "settlementPrice",
+            "fieldType": "Double"
         },
         {
             "fieldName": "versionNumber",
@@ -30,14 +42,7 @@
             "fieldName": "productSettlementType",
             "fieldType": "String"
         },
-        {
-            "fieldName": "optionType",
-            "fieldType": "String"
-        },
-        {
-            "fieldName": "exercisePrice",
-            "fieldType": "Double"
-        },
+
         {
             "fieldName": "currency",
             "fieldType": "String"
@@ -71,19 +76,11 @@
             "fieldType": "String"
         },
         {
-            "fieldName": "settlementPrice",
-            "fieldType": "Double"
-        },
-        {
             "fieldName": "productName",
             "fieldType": "String"
         },
         {
             "fieldName": "bloombergId",
-            "fieldType": "String"
-        },
-        {
-            "fieldName": "bloombergUrl",
             "fieldType": "String"
         },
         {

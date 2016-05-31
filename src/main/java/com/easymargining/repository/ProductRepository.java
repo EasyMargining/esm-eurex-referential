@@ -2,7 +2,6 @@ package com.easymargining.repository;
 
 import com.easymargining.domain.Product;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,10 +12,10 @@ import java.util.List;
 @SuppressWarnings("unused")
 public interface ProductRepository extends MongoRepository<Product,String> {
 
-    @Query(value="{ 'instrumentType' : ?0 }", fields="{ 'productId' : 1, 'productName' : 1}")
-    List<Product> findByInstrumentTypeAndProductIdRegex(String instrumentType, String productId);
+    /*@Query(value="{ 'instrumentType' : ?0 }", fields="{ 'productId' : 1, 'productName' : 1}")
+    List<Product> findByInstrumentTypeAndProductIdRegex(String instrumentType, String productId);*/
 
-    List<Product> findByProductId(String productId);
+    List<Product> findByProductDefinitionIdAndEffectiveDate(String productDefinitionId, LocalDate effectiveDate);
 
     List<Product> findDistinctProductByEffectiveDate(LocalDate effectiveDate);
 

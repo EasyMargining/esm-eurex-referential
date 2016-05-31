@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -216,13 +217,18 @@ public class ProductResource {
      * @param productIdentifier the productId or productName of the products to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/products/product-information/{productIdentifier}",
+    @RequestMapping(value = "/products/product-information/{productIdentifier}/effective-date/{effectiveDate}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public ResponseEntity<ProductInformation> getProductInformation(@PathVariable String productIdentifier) {
+    public ResponseEntity<ProductInformation> getProductInformation(@PathVariable String productIdentifier,
+                                                                    @PathVariable String effectiveDate) {
         log.debug("REST request to get ProductsInformation for productId : {}", productIdentifier);
-        ProductInformation productInformation = productService.getProductInformation(productIdentifier);
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate effectiveLocalDate = LocalDate.parse(effectiveDate, dateFormat);
+
+        ProductInformation productInformation = productService.getProductInformation(productIdentifier, effectiveLocalDate);
         return Optional.ofNullable(productInformation)
             .map(result -> new ResponseEntity<>(
                 result,
