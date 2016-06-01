@@ -24,7 +24,7 @@ public class EurexProductDefinition implements Serializable {
 
     @Id
     @Parsed(field = "Eurex Code")
-    private String eurexCode;
+    private String productDefinitionId;
 
     @Field("instrument_type")
     @Parsed(field = "Type")
@@ -63,7 +63,7 @@ public class EurexProductDefinition implements Serializable {
     private String minBlockSize;
 
     @Field("product_settlement_type")
-    @Parsed(field = "Type")
+    @Parsed(field = "Settlement Type")
     private String settlementType;
 
 }

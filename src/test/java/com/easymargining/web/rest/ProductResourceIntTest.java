@@ -133,8 +133,8 @@ public class ProductResourceIntTest {
         product.setTickSize(DEFAULT_TICK_SIZE);
         product.setTickValue(DEFAULT_TICK_VALUE);
         product.setMarginStyle(DEFAULT_MARGIN_STYLE);
-        product.setLiquidityClass(DEFAULT_LIQUIDITY_CLASS);
-        product.setLiquidationGroup(DEFAULT_LIQUIDATION_GROUP);
+//        product.setLiquidityClass(DEFAULT_LIQUIDITY_CLASS);
+//        product.setLiquidationGroup(DEFAULT_LIQUIDATION_GROUP);
         product.setProductName(DEFAULT_PRODUCT_NAME);
         product.setBloombergId(DEFAULT_BLOOMBERG_ID);
         product.setIsin(DEFAULT_ISIN);
@@ -169,8 +169,8 @@ public class ProductResourceIntTest {
         assertThat(testProduct.getTickSize()).isEqualTo(DEFAULT_TICK_SIZE);
         assertThat(testProduct.getTickValue()).isEqualTo(DEFAULT_TICK_VALUE);
         assertThat(testProduct.getMarginStyle()).isEqualTo(DEFAULT_MARGIN_STYLE);
-        assertThat(testProduct.getLiquidityClass()).isEqualTo(DEFAULT_LIQUIDITY_CLASS);
-        assertThat(testProduct.getLiquidationGroup()).isEqualTo(DEFAULT_LIQUIDATION_GROUP);
+//        assertThat(testProduct.getLiquidityClass()).isEqualTo(DEFAULT_LIQUIDITY_CLASS);
+//        assertThat(testProduct.getLiquidationGroup()).isEqualTo(DEFAULT_LIQUIDATION_GROUP);
         assertThat(testProduct.getProductName()).isEqualTo(DEFAULT_PRODUCT_NAME);
         assertThat(testProduct.getBloombergId()).isEqualTo(DEFAULT_BLOOMBERG_ID);
         assertThat(testProduct.getIsin()).isEqualTo(DEFAULT_ISIN);
@@ -320,8 +320,8 @@ public class ProductResourceIntTest {
         updatedProduct.setTickSize(UPDATED_TICK_SIZE);
         updatedProduct.setTickValue(UPDATED_TICK_VALUE);
         updatedProduct.setMarginStyle(UPDATED_MARGIN_STYLE);
-        updatedProduct.setLiquidityClass(UPDATED_LIQUIDITY_CLASS);
-        updatedProduct.setLiquidationGroup(UPDATED_LIQUIDATION_GROUP);
+//        updatedProduct.setLiquidityClass(UPDATED_LIQUIDITY_CLASS);
+//        updatedProduct.setLiquidationGroup(UPDATED_LIQUIDATION_GROUP);
         updatedProduct.setProductName(UPDATED_PRODUCT_NAME);
         updatedProduct.setBloombergId(UPDATED_BLOOMBERG_ID);
         updatedProduct.setIsin(UPDATED_ISIN);
@@ -349,8 +349,8 @@ public class ProductResourceIntTest {
         assertThat(testProduct.getTickSize()).isEqualTo(UPDATED_TICK_SIZE);
         assertThat(testProduct.getTickValue()).isEqualTo(UPDATED_TICK_VALUE);
         assertThat(testProduct.getMarginStyle()).isEqualTo(UPDATED_MARGIN_STYLE);
-        assertThat(testProduct.getLiquidityClass()).isEqualTo(UPDATED_LIQUIDITY_CLASS);
-        assertThat(testProduct.getLiquidationGroup()).isEqualTo(UPDATED_LIQUIDATION_GROUP);
+//        assertThat(testProduct.getLiquidityClass()).isEqualTo(UPDATED_LIQUIDITY_CLASS);
+//        assertThat(testProduct.getLiquidationGroup()).isEqualTo(UPDATED_LIQUIDATION_GROUP);
         assertThat(testProduct.getProductName()).isEqualTo(UPDATED_PRODUCT_NAME);
         assertThat(testProduct.getBloombergId()).isEqualTo(UPDATED_BLOOMBERG_ID);
         assertThat(testProduct.getIsin()).isEqualTo(UPDATED_ISIN);

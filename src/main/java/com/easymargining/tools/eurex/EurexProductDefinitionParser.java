@@ -85,7 +85,7 @@ public class EurexProductDefinitionParser {
 
                     beans2.add(
                             new EurexProductDefinition(
-                                    bean.getEurexCode(),
+                                    bean.getProductDefinitionId(),
                                     type,
                                     bean.getProductName(),
                                     bean.getBbgCode(),

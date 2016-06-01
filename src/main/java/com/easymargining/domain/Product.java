@@ -47,28 +47,38 @@ public class Product implements Serializable {
     @Field("settlement_price")
     private Double settlementPrice;
 
+    @Field("version_number")
     private Integer versionNumber;
+
+    @Field("exercise_style_flag")
+    private String exerciseStyleFlag;
+
+    @Field("margin_style")
+    private String marginStyle; //This field could be on EurexProductDefinition
+
     private String productSettlementType;
     private String currency;
-    private String exerciseStyleFlag;
     private String instrumentType;
     private Double tickSize;
     private Double tickValue;
-    private String marginStyle;
-    private String liquidityClass;
-    private String liquidationGroup;
+//    private String liquidityClass;
+//    private String liquidationGroup;
     private String productName;
     private String bloombergId;
     private String isin;
     private String tradeUnit;
 
     public Product(String productDefinitionId, LocalDate maturityDate, String optionType,
-                   LocalDate effectiveDate, Double exercisePrice, Double settlementPrice) {
+                   LocalDate effectiveDate, Double exercisePrice, Double settlementPrice,
+                   Integer versionNumber, String exerciseStyleFlag, String marginStyle) {
         this.productDefinitionId = productDefinitionId;
         this.maturityDate = maturityDate;
         this.optionType = optionType;
         this.effectiveDate = effectiveDate;
         this.exercisePrice = exercisePrice;
         this.settlementPrice = settlementPrice;
+        this.versionNumber = versionNumber;
+        this.exerciseStyleFlag = exerciseStyleFlag;
+        this.marginStyle = marginStyle;
     }
 }

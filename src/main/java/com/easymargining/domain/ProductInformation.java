@@ -37,7 +37,7 @@ public class ProductInformation implements Serializable {
     private TreeMap<LocalDate, List<ProductPrices>> putPrices;
     public ProductInformation(List<Product> products, EurexProductDefinition productDefinition) {
         Assert.notNull(products);
-        this.productDefinitionId = productDefinition.getEurexCode();
+        this.productDefinitionId = productDefinition.getProductDefinitionId();
         this.tickSize = Double.parseDouble(productDefinition.getTickSize());
         this.tickValue = Double.parseDouble(productDefinition.getTickValue());
         this.currency = productDefinition.getCurrency();

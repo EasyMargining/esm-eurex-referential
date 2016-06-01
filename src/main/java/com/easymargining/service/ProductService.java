@@ -60,7 +60,7 @@ public class ProductService {
         List<EurexProductDefinition> productDefinitionsList = productDefRepository.findByType(instrumentType);
         productDefinitionsList.forEach((productDefinition) -> {
             productIdentifiersList.add(productDefinition.getProductName());
-            productIdentifiersList.add(productDefinition.getEurexCode());
+            productIdentifiersList.add(productDefinition.getProductDefinitionId());
         });
         return productIdentifiersList;
     }
@@ -92,8 +92,12 @@ public class ProductService {
             eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().get().name() : "",
             effectiveDate,
             eurexProductDefinition.getProduct().getSeriesDefinition().getExercisePrice(),
-            eurexProductDefinition.getSettlementPrice()
+            eurexProductDefinition.getSettlementPrice(),
+            eurexProductDefinition.getProduct().getSeriesDefinition().getVersionNumber(),
+            eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().get().name() : "" ,
+            eurexProductDefinition.getProduct().getMarginStyle().toString()
             );
+
         return product;
     }
 
@@ -152,7 +156,7 @@ public class ProductService {
 
     public EurexProductDefinition getProductDefinitionByProductIdentifier(String productIdentifier) {
         log.debug("ProductService::getProductDefinitionByProductIdentifier(" + productIdentifier + ")");
-        EurexProductDefinition eurexProductDefinition = productDefRepository.findByEurexCodeLikeOrProductNameLike(productIdentifier, productIdentifier);
+        EurexProductDefinition eurexProductDefinition = productDefRepository.findByProductDefinitionIdLikeOrProductNameLike(productIdentifier, productIdentifier);
         log.debug("ProductService::getProductDefinitionByProductIdentifier : eurexProductDefinition" + eurexProductDefinition);
         return eurexProductDefinition;
     }
@@ -164,7 +168,7 @@ public class ProductService {
 
     public ProductInformation getProductInformation(String productIdentifier, LocalDate effectiveDate) {
         EurexProductDefinition productDefinition = getProductDefinitionByProductIdentifier(productIdentifier);
-        List<Product> products = getProductsByProductDefinitionIdAndEffectiveDate(productDefinition.getEurexCode(), effectiveDate);
+        List<Product> products = getProductsByProductDefinitionIdAndEffectiveDate(productDefinition.getProductDefinitionId(), effectiveDate);
         return new ProductInformation(products, productDefinition);
     }
 

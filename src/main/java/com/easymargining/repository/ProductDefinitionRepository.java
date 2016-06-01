@@ -13,6 +13,6 @@ public interface ProductDefinitionRepository extends MongoRepository<EurexProduc
     // ProductType : Future or Option
     List<EurexProductDefinition> findByType(String instrumentType);
 
-    EurexProductDefinition findByEurexCodeLikeOrProductNameLike(String like1, String like2);
+    EurexProductDefinition findByProductDefinitionIdLikeOrProductNameLike(String like1, String like2);
 
 }
