@@ -67,6 +67,7 @@ public class Product implements Serializable {
     private String bloombergId;
     private String isin;
     private String tradeUnit;
+    private String minBlockSize;
 
     public Product(String productDefinitionId, LocalDate maturityDate, String optionType,
                    LocalDate effectiveDate, Double exercisePrice, Double settlementPrice,

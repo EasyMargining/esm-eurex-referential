@@ -30,6 +30,12 @@ public class ProductInformation implements Serializable {
     private String productName;
     private String bloombergId;
     private String isin;
+    private Integer versionNumber;
+    private LocalDate effectiveDate;
+    private String instrumentType;
+    private String settlementType;
+    private String minBlockSize;
+    private String tradeUnit;
 
     private TreeMap<LocalDate, List<ProductPrices>> futuresPrices;
 
@@ -41,10 +47,17 @@ public class ProductInformation implements Serializable {
         this.tickSize = Double.parseDouble(productDefinition.getTickSize());
         this.tickValue = Double.parseDouble(productDefinition.getTickValue());
         this.currency = productDefinition.getCurrency();
-        //this.marginStyle = products.get(0).getMarginStyle();
         this.productName = productDefinition.getProductName();
         this.bloombergId = productDefinition.getBbgCode();
         this.isin = productDefinition.getIsinCode();
+        this.effectiveDate = productDefinition.getEffectiveDate();
+        this.instrumentType = productDefinition.getType();
+        this.settlementType = productDefinition.getSettlementType();
+        this.tradeUnit = productDefinition.getTradUnit();
+        this.minBlockSize = productDefinition.getMinBlockSize();
+
+        this.marginStyle = products.get(0).getMarginStyle();
+        this.versionNumber = products.get(0).getVersionNumber();
 
         if (productDefinition.getType().equals("Option")) {
             callPrices = new TreeMap<>();

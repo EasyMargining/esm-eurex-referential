@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * Created by Gilles Marchal on 20/02/2016.
@@ -23,7 +24,10 @@ public class EurexProductDefinition implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
+    private String id;
+
     @Parsed(field = "Eurex Code")
+    @Field("product_definition_id")
     private String productDefinitionId;
 
     @Field("instrument_type")
@@ -66,4 +70,22 @@ public class EurexProductDefinition implements Serializable {
     @Parsed(field = "Settlement Type")
     private String settlementType;
 
+    @Field("effective_date")
+    private LocalDate effectiveDate;
+
+    public EurexProductDefinition(String productDefinitionId, String type, String productName, String bbgCode,
+                                  String currency, String isinCode, String tickSize, String tradUnit, String tickValue,
+                                  String minBlockSize, String settlementType) {
+        this.productDefinitionId = productDefinitionId;
+        this.type = type;
+        this.productName = productName;
+        this.bbgCode = bbgCode;
+        this.currency = currency;
+        this.isinCode = isinCode;
+        this.tickSize = tickSize;
+        this.tradUnit = tradUnit;
+        this.tickValue = tickValue;
+        this.minBlockSize = minBlockSize;
+        this.settlementType = settlementType;
+    }
 }

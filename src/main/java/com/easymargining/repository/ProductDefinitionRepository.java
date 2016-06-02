@@ -3,6 +3,7 @@ package com.easymargining.repository;
 import com.easymargining.domain.EurexProductDefinition;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -11,8 +12,10 @@ import java.util.List;
 public interface ProductDefinitionRepository extends MongoRepository<EurexProductDefinition, String> {
 
     // ProductType : Future or Option
-    List<EurexProductDefinition> findByType(String instrumentType);
+    List<EurexProductDefinition> findByTypeAndEffectiveDate(String instrumentType, LocalDate effectiveDate);
 
-    EurexProductDefinition findByProductDefinitionIdLikeOrProductNameLike(String like1, String like2);
+    EurexProductDefinition findByEffectiveDateAndProductDefinitionIdLikeOrProductNameLike(LocalDate effectiveDate, String like1, String like2);
+
+    EurexProductDefinition findByProductDefinitionIdAndEffectiveDate(String productDefinitionId, LocalDate effectiveDate);
 
 }

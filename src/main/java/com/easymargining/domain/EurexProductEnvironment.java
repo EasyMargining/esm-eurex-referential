@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Created by rjean030116 on 20/05/2016.
@@ -39,17 +41,17 @@ public class EurexProductEnvironment {
         EurexProductEnvironment environment =
             EurexProductEnvironment.getInstance();
 
-        // Convert LocalDate
-        org.threeten.bp.LocalDate s_valuationDate = org.threeten.bp.LocalDate.parse(valuationDate.toString());
-
         try {
-            environment.setEurexProductDefinition(new File(productEnvironmentDirectory + "/eurex-products-definition.csv").toURI().toURL());
+            String productDefinitionFile = productEnvironmentDirectory + "/PRODUCTDEFINITION" +
+                valuationDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
+            log.debug("productDefinitionFile : " + productDefinitionFile);
+            environment.setEurexProductDefinition(new File(productDefinitionFile).toURI().toURL());
             environment.setValuationDate(valuationDate);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
-        log.info("Eurex Product Environment for valuation date : " + s_valuationDate.toString() + " is initialized ");
+        log.info("Eurex Product Environment for valuation date : " + valuationDate.toString() + " is initialized ");
     }
 
     public URL getEurexProductDefinition() {

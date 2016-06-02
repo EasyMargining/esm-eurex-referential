@@ -150,13 +150,18 @@ public class ProductResource {
      * @param instrumentType the instrument type of the products to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the products, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/products/instrument-type/{instrumentType}",
+    @RequestMapping(value = "/products/instrument-type/{instrumentType}/effective-date/{effectiveDate}",
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
-    public ResponseEntity<Set<String>> getProductsByInstrumentType(@PathVariable String instrumentType) {
-        log.debug("REST request to get Products by Instrument Type : {}", instrumentType);
-        Set<String> products = productService.getProductIdentifiersByInstrumentType(instrumentType);
+    public ResponseEntity<Set<String>> getProductsByInstrumentTypeAndEffectiveDate(@PathVariable String instrumentType,
+                                                                                   @PathVariable String effectiveDate) {
+        log.debug("REST request to get Products by Instrument Type : {} and Effective Date {}", instrumentType, effectiveDate);
+
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate effectiveLocalDate = LocalDate.parse(effectiveDate, dateFormat);
+
+        Set<String> products = productService.getProductIdentifiersByInstrumentTypeAndEffectiveDate(instrumentType, effectiveLocalDate);
         return Optional.ofNullable(products)
             .map(result -> new ResponseEntity<>(
                 result,

@@ -51,23 +51,21 @@ public class ProductService {
         productRepository.deleteAll();
     }
 
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable);
-    }
-
-    public Set<String> getProductIdentifiersByInstrumentType(String instrumentType) {
+    public Set<String> getProductIdentifiersByInstrumentTypeAndEffectiveDate(String instrumentType, LocalDate effectiveDate) {
         Set<String> productIdentifiersList = new HashSet<>();
-        List<EurexProductDefinition> productDefinitionsList = productDefRepository.findByType(instrumentType);
+        List<EurexProductDefinition> productDefinitionsList = productDefRepository.findByTypeAndEffectiveDate(instrumentType, effectiveDate);
         productDefinitionsList.forEach((productDefinition) -> {
             productIdentifiersList.add(productDefinition.getProductName());
             productIdentifiersList.add(productDefinition.getProductDefinitionId());
         });
+        log.debug("ProductService.getProductIdentifiersByInstrumentTypeAndEffectiveDate returned {} products identifier", productDefinitionsList.size());
         return productIdentifiersList;
     }
 
     public Product findOne(String _id) {
         Product product = productRepository.findOne(_id);
-        EurexProductDefinition productDefinition = productDefRepository.findOne(product.getProductDefinitionId());
+        EurexProductDefinition productDefinition = productDefRepository.findByProductDefinitionIdAndEffectiveDate(
+            product.getProductDefinitionId(), product.getEffectiveDate());
         product.setInstrumentType(productDefinition.getType());
         product.setProductName(productDefinition.getProductName());
         product.setBloombergId(productDefinition.getBbgCode());
@@ -77,6 +75,7 @@ public class ProductService {
         product.setTickValue(Double.parseDouble(productDefinition.getTickValue()));
         product.setTradeUnit(productDefinition.getTradUnit());
         product.setProductSettlementType(productDefinition.getSettlementType());
+        product.setMinBlockSize(productDefinition.getMinBlockSize());
         return product;
     }
 
@@ -131,6 +130,10 @@ public class ProductService {
             List<EurexProductDefinition> productDefinitions = null;
             try {
                 productDefinitions = EurexProductDefinitionParser.parse(file);
+                //Add the effectiveDate in order to be able to get the product definition on a daily basis
+                productDefinitions.forEach((productDefinition) -> {
+                    productDefinition.setEffectiveDate(effectiveDate);
+                });
                 productDefRepository.save(productDefinitions);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -138,25 +141,13 @@ public class ProductService {
         });
     }
 
-    public List<Product> findDistinctProductByEffectiveDate(LocalDate effectiveDate) {
-        return productRepository.findDistinctProductByEffectiveDate(effectiveDate);
-    }
-
-    public List<Product> findAll() {
-        return productRepository.findAll();
-    }
-
     public Page<Product> findAll(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
 
-    public List<Product> findByEffectiveDate(LocalDate effectiveDate) {
-        return productRepository.findByEffectiveDate(effectiveDate);
-    }
-
-    public EurexProductDefinition getProductDefinitionByProductIdentifier(String productIdentifier) {
-        log.debug("ProductService::getProductDefinitionByProductIdentifier(" + productIdentifier + ")");
-        EurexProductDefinition eurexProductDefinition = productDefRepository.findByProductDefinitionIdLikeOrProductNameLike(productIdentifier, productIdentifier);
+    public EurexProductDefinition getProductDefinitionByProductIdentifierAndEffectiveDate(String productIdentifier, LocalDate effectiveDate) {
+        log.debug("ProductService::getProductDefinitionByProductIdentifier({}, {})", productIdentifier, effectiveDate);
+        EurexProductDefinition eurexProductDefinition = productDefRepository.findByEffectiveDateAndProductDefinitionIdLikeOrProductNameLike(effectiveDate, productIdentifier, productIdentifier);
         log.debug("ProductService::getProductDefinitionByProductIdentifier : eurexProductDefinition" + eurexProductDefinition);
         return eurexProductDefinition;
     }
@@ -167,7 +158,7 @@ public class ProductService {
     }
 
     public ProductInformation getProductInformation(String productIdentifier, LocalDate effectiveDate) {
-        EurexProductDefinition productDefinition = getProductDefinitionByProductIdentifier(productIdentifier);
+        EurexProductDefinition productDefinition = getProductDefinitionByProductIdentifierAndEffectiveDate(productIdentifier, effectiveDate);
         List<Product> products = getProductsByProductDefinitionIdAndEffectiveDate(productDefinition.getProductDefinitionId(), effectiveDate);
         return new ProductInformation(products, productDefinition);
     }
