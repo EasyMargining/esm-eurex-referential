@@ -33,7 +33,8 @@ public class ProductInformation implements Serializable {
     private Integer versionNumber;
     private LocalDate effectiveDate;
     private String instrumentType;
-    private String settlementType;
+    private String productSettlementType;
+    private String exerciseStyleFlag;
     private String minBlockSize;
     private String tradeUnit;
 
@@ -52,12 +53,13 @@ public class ProductInformation implements Serializable {
         this.isin = productDefinition.getIsinCode();
         this.effectiveDate = productDefinition.getEffectiveDate();
         this.instrumentType = productDefinition.getType();
-        this.settlementType = productDefinition.getSettlementType();
+        this.productSettlementType = productDefinition.getSettlementType();
         this.tradeUnit = productDefinition.getTradUnit();
         this.minBlockSize = productDefinition.getMinBlockSize();
 
         this.marginStyle = products.get(0).getMarginStyle();
         this.versionNumber = products.get(0).getVersionNumber();
+        this.exerciseStyleFlag = products.get(0).getExerciseStyleFlag();
 
         if (productDefinition.getType().equals("Option")) {
             callPrices = new TreeMap<>();
