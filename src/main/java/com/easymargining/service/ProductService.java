@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.DoubleAccumulator;
 
 @Service
 public class ProductService {
@@ -79,24 +79,40 @@ public class ProductService {
         return product;
     }
 
-   public static Product convertFromEurex(EurexSettlementPriceDefinition eurexProductDefinition, LocalDate effectiveDate) {
+    public static String formatId(EurexSettlementPriceDefinition eurexSettlementPriceDefinition, LocalDate effectiveDate) {
+        String _id;
+        if (eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getExerciseFlag().isPresent()) {
+            _id =  eurexSettlementPriceDefinition.getProduct().getProductId() + "_"
+                + eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getCallPutFlag().get().name() + "_"
+                + eurexSettlementPriceDefinition.getProduct().getExpirationDate().toString(org.threeten.bp.format.DateTimeFormatter.ofPattern("yyyyMMdd")) + "_"
+                + eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getExercisePrice() + "_"
+                + effectiveDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        } else {
+            _id =  eurexSettlementPriceDefinition.getProduct().getProductId() + "_"
+                + eurexSettlementPriceDefinition.getProduct().getExpirationDate().toString(org.threeten.bp.format.DateTimeFormatter.ofPattern("yyyyMMdd")) + "_"
+                + effectiveDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        }
+        return _id;
+    }
 
-       LocalDate maturityDate = LocalDate.of( eurexProductDefinition.getProduct().getExpirationDate().getYear(),
-           eurexProductDefinition.getProduct().getExpirationDate().getMonthValue(),
-           eurexProductDefinition.getProduct().getExpirationDate().getDayOfMonth());
+    public static Product convertFromEurex(EurexSettlementPriceDefinition eurexSettlementPriceDefinition, LocalDate effectiveDate) {
+
+        LocalDate maturityDate = LocalDate.of( eurexSettlementPriceDefinition.getProduct().getExpirationDate().getYear(),
+            eurexSettlementPriceDefinition.getProduct().getExpirationDate().getMonthValue(),
+            eurexSettlementPriceDefinition.getProduct().getExpirationDate().getDayOfMonth());
 
         Product product = new Product(
-            eurexProductDefinition.getProduct().getProductId(),
+            formatId(eurexSettlementPriceDefinition, effectiveDate),
+            eurexSettlementPriceDefinition.getProduct().getProductId(),
             maturityDate,
-            eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getCallPutFlag().get().name() : "",
+            eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getCallPutFlag().isPresent() ? eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getCallPutFlag().get().name() : "",
             effectiveDate,
-            eurexProductDefinition.getProduct().getSeriesDefinition().getExercisePrice(),
-            eurexProductDefinition.getSettlementPrice(),
-            eurexProductDefinition.getProduct().getSeriesDefinition().getVersionNumber(),
-            eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().isPresent() ? eurexProductDefinition.getProduct().getSeriesDefinition().getExerciseFlag().get().name() : "" ,
-            eurexProductDefinition.getProduct().getMarginStyle().toString()
-            );
-
+            eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getExercisePrice(),
+            eurexSettlementPriceDefinition.getSettlementPrice(),
+            eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getVersionNumber(),
+            eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getExerciseFlag().isPresent() ? eurexSettlementPriceDefinition.getProduct().getSeriesDefinition().getExerciseFlag().get().name() : "" ,
+            eurexSettlementPriceDefinition.getProduct().getMarginStyle().toString()
+        );
         return product;
     }
 
@@ -162,5 +178,4 @@ public class ProductService {
         List<Product> products = getProductsByProductDefinitionIdAndEffectiveDate(productDefinition.getProductDefinitionId(), effectiveDate);
         return new ProductInformation(products, productDefinition);
     }
-
 }

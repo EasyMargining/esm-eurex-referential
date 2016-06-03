@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -45,37 +46,49 @@ public class PositionService {
         // Find positions in the given portfolio with effective date <= valuationDate
         List<Position> positions = positionRepository.findByPortfolioIdAndEffectiveDateLessThanEqualOrderByEffectiveDate(portfolioId, valuationDate);
 
+        HashMap<Position, Product> positionProductMap = new HashMap<>();
         for (Iterator<Position> positionIterator = positions.iterator(); positionIterator.hasNext();) {
             Position position = positionIterator.next();
             Product product = productService.findOne(position.getProductId());
 
-            if (product.getMaturityDate().isBefore(valuationDate)) {
-                // Remove positions with maturity date < valuationDate
-                positionIterator.remove();
+            if (!product.getMaturityDate().isBefore(valuationDate)) {
+                // We only keep positions with maturity date >= valuationDate
+                positionProductMap.put(position, product);
             }
         }
 
+        /*
+            Map in which we calculate the quantity aggregation
+            The key is a string concatenation of {ProductDefinitionId, MaturityDate, OptionType, Strike}
+        */
         HashMap<String, AggregatedWrapper> aggregatedWrapperHashMap = new HashMap<>();
-        for (Position position : positions) {
+        for (Map.Entry<Position, Product> entry : positionProductMap.entrySet()) {
+            Position position = entry.getKey();
+            Product product = entry.getValue();
+
+            //Replace the effectiveDate part of the productId with the valutionDate
+            String key = product.getId().substring(0, product.getId().length() - 9)
+                + "_" + valuationDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
             //Update the aggregatedWrapperHashMap with the position
-            if (!aggregatedWrapperHashMap.containsKey(position.getProductId())) {
+            if (!aggregatedWrapperHashMap.containsKey(key)) {
                 AggregatedWrapper aggregatedWrapper = new AggregatedWrapper(position);
-                aggregatedWrapperHashMap.put(position.getProductId(), aggregatedWrapper);
+                aggregatedWrapperHashMap.put(key, aggregatedWrapper);
             } else {
-                aggregatedWrapperHashMap.get(position.getProductId()).addPosition(position);
+                aggregatedWrapperHashMap.get(key).addPosition(position);
             }
 
-            AggregatedWrapper aggregatedWrapper = aggregatedWrapperHashMap.get(position.getProductId());
+            AggregatedWrapper aggregatedWrapper = aggregatedWrapperHashMap.get(key);
 
             if (aggregatedWrapper.getAggregatedQuantity() == 0d
                 && aggregatedWrapper.getLastDate().isBefore(valuationDate.minusDays(1))) {
-                aggregatedWrapperHashMap.remove(position.getProductId());
+                aggregatedWrapperHashMap.remove(key);
             }
         }
 
         List<Position> aggregatedPositions = new ArrayList<>();
         for (Map.Entry<String, AggregatedWrapper> entry : aggregatedWrapperHashMap.entrySet()) {
-            aggregatedPositions.add(entry.getValue().getAggregatedPosition());
+            aggregatedPositions.add(entry.getValue().getAggregatedPosition(entry.getKey()));
         }
 
         return aggregatedPositions;
@@ -102,10 +115,13 @@ public class PositionService {
             lastDate = position.getEffectiveDate();
         }
 
-        public Position getAggregatedPosition() {
-            //We return the productId as positionId because this position is an aggregated one
-            //So does not have its own positionId
-            return new Position(productId, productId, portfolioId, lastDate, aggregatedQuantity, exchange);
+        public Position getAggregatedPosition(String key) {
+            /*
+             * This position is an aggregated one so :
+             *      - does not have its own positionId, by default we put null
+              *     - does not have productId, so we put key (a formated string understandable by the ui)
+             */
+            return new Position(null, key, portfolioId, lastDate, aggregatedQuantity, exchange);
         }
 
         public double getAggregatedQuantity() {

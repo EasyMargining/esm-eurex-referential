@@ -23,6 +23,11 @@ public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /*
+     * Id format :
+     *              - example if option : SDF_PUT_20181218_0.01_20151127
+     *              - example if futures : COV_20181218_20151127
+     */
     @Id
     private String id;
 
@@ -54,7 +59,7 @@ public class Product implements Serializable {
     private String exerciseStyleFlag;
 
     @Field("margin_style")
-    private String marginStyle; //This field could be on EurexProductDefinition
+    private String marginStyle; //This field could be stored on productDefinition mongo document
 
     private String productSettlementType;
     private String currency;
@@ -69,9 +74,10 @@ public class Product implements Serializable {
     private String tradeUnit;
     private String minBlockSize;
 
-    public Product(String productDefinitionId, LocalDate maturityDate, String optionType,
+    public Product(String id, String productDefinitionId, LocalDate maturityDate, String optionType,
                    LocalDate effectiveDate, Double exercisePrice, Double settlementPrice,
                    Integer versionNumber, String exerciseStyleFlag, String marginStyle) {
+        this.id = id;
         this.productDefinitionId = productDefinitionId;
         this.maturityDate = maturityDate;
         this.optionType = optionType;

@@ -114,7 +114,7 @@ public class ProductResource {
      * @param id the id of the product to retrieve
      * @return the ResponseEntity with status 200 (OK) and with body the product, or with status 404 (Not Found)
      */
-    @RequestMapping(value = "/products/{id}",
+    @RequestMapping(value = "/products/{id:.+}",        // {id:.+} -> in order to avoid Spring to truncate after .
         method = RequestMethod.GET,
         produces = MediaType.APPLICATION_JSON_VALUE)
     @Timed
