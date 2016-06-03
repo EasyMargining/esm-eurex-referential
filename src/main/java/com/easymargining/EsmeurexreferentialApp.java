@@ -88,17 +88,13 @@ public class EsmeurexreferentialApp {
         "Config Server: \t{}\n----------------------------------------------------------",
             configServerStatus == null ? "Not found or not setup for this application" : configServerStatus);
 
-        String valuationDateMarketDataStr = env.getProperty("marketdata.valuationdate");
-        LocalDate valuationDateMarketData = LocalDate.parse(valuationDateMarketDataStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String marketDataDirectory = env.getProperty("marketdata.directory");
         // Initialize EurexMarketDataEnvironment
-        EurexMarketDataEnvironment.init(marketDataDirectory, valuationDateMarketData);
+        EurexMarketDataEnvironment.init(marketDataDirectory);
 
-        String valuationDateProducDefinitiontStr = env.getProperty("productDefinition.valuationdate");
-        LocalDate valuationDateProductDefinition = LocalDate.parse(valuationDateProducDefinitiontStr, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         String productEnvironmentDirectory = env.getProperty("productDefinition.directory");
         // Initialize EurexProductEnvironment
-        EurexProductEnvironment.init(productEnvironmentDirectory, valuationDateProductDefinition);
+        EurexProductEnvironment.init(productEnvironmentDirectory);
 
     }
 

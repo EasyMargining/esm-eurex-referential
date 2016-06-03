@@ -42,7 +42,7 @@ public class EurexMarketDataEnvironment {
 
     private URL settlementPricesConfiguration = null;
 
-    private LocalDate valuationDate = null;
+    private String MARKET_DIRECTORY;
 
     private EurexMarketDataEnvironment() {
     }
@@ -60,8 +60,17 @@ public class EurexMarketDataEnvironment {
     }
 
     // Initialize Eurex MarketData Environment
-    public static void init(String marketDataDirectory, LocalDate valuationDate) {
-        log.info("Initialize Eurex Market Data Environment for valuation date : " + valuationDate.toString());
+    public static void init(String marketDataDirectory) {
+        log.info("Initialize Eurex Market Data Environment");
+        EurexMarketDataEnvironment environment =
+            EurexMarketDataEnvironment.getInstance() ;
+
+        environment.setMarketDirectory(marketDataDirectory);
+    }
+
+    // Initialize Eurex MarketData Environment for the valuationDate
+    public static void loadMarketData(LocalDate valuationDate) {
+        log.info("Load Eurex Market Data Environment for valuation date : " + valuationDate.toString());
         EurexMarketDataEnvironment environment =
             EurexMarketDataEnvironment.getInstance() ;
 
@@ -69,14 +78,13 @@ public class EurexMarketDataEnvironment {
         org.threeten.bp.LocalDate s_valuationDate = org.threeten.bp.LocalDate.parse(valuationDate.toString());
 
         // Use file resolver utility to discover data from standard Eurex directory structure
-        String directoryFilePattern = new String("file:").concat(marketDataDirectory);
+        String directoryFilePattern = new String("file:").concat(environment.getMarketDirectory());
         MarketDataFileResolver fileResolver = new MarketDataFileResolver(directoryFilePattern, s_valuationDate);
 
         // Create ETD data load request, pointing to classpath, and load
         EurexEtdMarketDataLoadRequest etdDataLoadRequest = MarketDataLoaders.etdRequest(fileResolver);
 
         environment.setSettlementPricesConfiguration(etdDataLoadRequest.getSettlementPrices());
-        environment.setValuationDate(valuationDate);
 
         // Load Eurex Risk Measure
         Set<Triple<String, String, String>> liquidationGroupDef = null;
@@ -106,20 +114,20 @@ public class EurexMarketDataEnvironment {
         log.info("Eurex Market Data Environment for valuation date : " + s_valuationDate.toString() + " is initialized ");
     }
 
+    public String getMarketDirectory() {
+        return MARKET_DIRECTORY;
+    }
+
+    public void setMarketDirectory(String marketDirectory) {
+        MARKET_DIRECTORY = marketDirectory;
+    }
+
     public URL getSettlementPricesConfiguration() {
         return settlementPricesConfiguration;
     }
 
     public void setSettlementPricesConfiguration(URL settlementPricesConfiguration) {
         this.settlementPricesConfiguration = settlementPricesConfiguration;
-    }
-
-    public LocalDate getValuationDate() {
-        return valuationDate;
-    }
-
-    public void setValuationDate(LocalDate valuationDate) {
-        this.valuationDate = valuationDate;
     }
 
     // Map<Liquidation Group Name, <Liquidation Group Name Split>>

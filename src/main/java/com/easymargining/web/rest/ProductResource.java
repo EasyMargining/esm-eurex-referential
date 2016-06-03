@@ -1,10 +1,7 @@
 package com.easymargining.web.rest;
 
 import com.codahale.metrics.annotation.Timed;
-import com.easymargining.domain.EurexMarketDataEnvironment;
-import com.easymargining.domain.EurexProductEnvironment;
-import com.easymargining.domain.Product;
-import com.easymargining.domain.ProductInformation;
+import com.easymargining.domain.*;
 import com.easymargining.service.ProductService;
 import com.easymargining.web.rest.util.HeaderUtil;
 import com.easymargining.web.rest.util.PaginationUtil;
@@ -176,17 +173,20 @@ public class ProductResource {
      * @return the ResponseEntity with status 200 (OK)
      */
 
-    @RequestMapping(value = "/products/load-products",
+    @RequestMapping(value = "/products/load-products/{valuationDate}",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> loadProducts() {
-        log.debug("REST request to loadProducts : {}");
+    public ResponseEntity<Void> loadProducts(@PathVariable String valuationDate) {
+        log.debug("REST request to loadProducts : {}", valuationDate);
 
         // Initialize Product Definition Referential
         try {
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalDate valuationLocalDate = LocalDate.parse(valuationDate, dateFormat);
+
+            EurexMarketDataEnvironment.loadMarketData(valuationLocalDate);
             URL settlementPricesFile = EurexMarketDataEnvironment.getInstance().getSettlementPricesConfiguration();
-            LocalDate valuationDate = EurexMarketDataEnvironment.getInstance().getValuationDate();
-            productService.loadProducts(settlementPricesFile, valuationDate);
+            productService.loadProducts(settlementPricesFile, valuationLocalDate);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -200,17 +200,19 @@ public class ProductResource {
      * @return the ResponseEntity with status 200 (OK)
      */
 
-    @RequestMapping(value = "/products/load-products-definitions",
+    @RequestMapping(value = "/products/load-products-definitions/{valuationDate}",
         method = RequestMethod.POST,
         produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> loadProductsDefinitions() {
-        log.debug("REST request to loadProductsDefinitions : {}");
+    public ResponseEntity<Void> loadProductsDefinitions(@PathVariable String valuationDate) {
+        log.debug("REST request to loadProductsDefinitions : {}", valuationDate);
 
-        // Initialize Product Definition Referential
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate valuationLocalDate = LocalDate.parse(valuationDate, dateFormat);
+
+        EurexProductEnvironment.loadProductEnvironment(valuationLocalDate);
         List<URL> list = new ArrayList<URL>();
         list.add(EurexProductEnvironment.getInstance().getEurexProductDefinition());
-        LocalDate valuationDate = EurexProductEnvironment.getInstance().getValuationDate();
-        productService.loadEurexProductDefinition(list, valuationDate);
+        productService.loadEurexProductDefinition(list, valuationLocalDate);
 
         return ResponseEntity.ok().build();
     }

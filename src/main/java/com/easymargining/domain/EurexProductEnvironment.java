@@ -18,7 +18,7 @@ public class EurexProductEnvironment {
     private static EurexProductEnvironment INSTANCE = null;
 
     private URL eurexProductDefinition = null;
-    private LocalDate valuationDate = null;
+    private String PRODUCT_DEFINITION_REPOSITORY;
 
     private EurexProductEnvironment() {
     }
@@ -36,22 +36,37 @@ public class EurexProductEnvironment {
     }
 
     // Initialize Eurex Product Environment
-    public static void init(String productEnvironmentDirectory,  LocalDate valuationDate) {
+    public static void init(String productEnvironmentDirectory) {
+        log.info("Initialize Eurex Product Environment : ");
+        EurexProductEnvironment environment =
+            EurexProductEnvironment.getInstance();
+
+        environment.setProductDefinitionRepository(productEnvironmentDirectory);
+    }
+
+    public static void loadProductEnvironment(LocalDate valuationDate) {
         log.info("Initialize Eurex Product Environment for valuation date : " + valuationDate.toString());
         EurexProductEnvironment environment =
             EurexProductEnvironment.getInstance();
 
         try {
-            String productDefinitionFile = productEnvironmentDirectory + "/PRODUCTDEFINITION" +
+            String productDefinitionFile = environment.getProductDefinitionRepository() + "/PRODUCTDEFINITION" +
                 valuationDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".csv";
             log.debug("productDefinitionFile : " + productDefinitionFile);
             environment.setEurexProductDefinition(new File(productDefinitionFile).toURI().toURL());
-            environment.setValuationDate(valuationDate);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
 
         log.info("Eurex Product Environment for valuation date : " + valuationDate.toString() + " is initialized ");
+    }
+
+    public String getProductDefinitionRepository() {
+        return PRODUCT_DEFINITION_REPOSITORY;
+    }
+
+    public void setProductDefinitionRepository(String productDefinitionRepository) {
+        PRODUCT_DEFINITION_REPOSITORY = productDefinitionRepository;
     }
 
     public URL getEurexProductDefinition() {
@@ -60,13 +75,5 @@ public class EurexProductEnvironment {
 
     public void setEurexProductDefinition(URL eurexProductDefinition) {
         this.eurexProductDefinition = eurexProductDefinition;
-    }
-
-    public LocalDate getValuationDate() {
-        return valuationDate;
-    }
-
-    public void setValuationDate(LocalDate valuationDate) {
-        this.valuationDate = valuationDate;
     }
 }
